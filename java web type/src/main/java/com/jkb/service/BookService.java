@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface BookService {
     List<Book> getAllBook();
-//    int updateBook(Book book);
+    int updateBook(@Param("code")long code);
 }

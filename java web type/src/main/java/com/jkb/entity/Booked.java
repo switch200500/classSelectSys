@@ -9,7 +9,7 @@ public class Booked {
 
     private long Sno;
 
-    private Integer code;
+    private long code;
 
     private byte buy;
 

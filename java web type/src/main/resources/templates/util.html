@@ -680,13 +680,30 @@
                                     sortable
                                     prop="rec">
                                 <template slot-scope="scope">
-                                    <el-rate
-                                            v-model="scope.row.rec"
-                                            disabled
-                                            show-score
-                                            text-color="#ff9900"
-                                            score-template="{value}">
-                                    </el-rate>
+                                    <div style="height: 23px">
+                                        <div class="left">网络评分：</div>
+                                        <el-rate
+                                                class="left"
+                                                v-model="scope.row.webRec"
+                                                disabled
+                                                show-score
+                                                text-color="#ff9900"
+                                                score-template="{value}">
+                                        </el-rate>
+                                    </div>
+
+                                    <div style="height: 23px">
+                                        <div class="left">学生评分：</div>
+                                        <el-rate
+                                                class="left"
+                                                v-model="scope.row.rec"
+                                                disabled
+                                                show-score
+                                                text-color="#ff9900"
+                                                score-template="{value}">
+                                        </el-rate>
+                                    </div>
+
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -1411,7 +1428,9 @@
                                 buy: 0,
                                 personRec: row.personRec,
                             };
-                            handleData(a,row.sno?row:b,this.upBookFunction);
+                            handleData(a,row.sno?row:b,this.upBookedFunction);
+                            // console.log(row.code);
+                            handleData('/update_book',{code: row.code},this.upBookFunction);
                             break;
                         case 'book_buy':
                             this.$confirm((row.buy?'取消订购':'订购书籍')+'是否继续?', '提示', {
@@ -1428,7 +1447,7 @@
                                     personRec: 0,
                                 };
                                // console.log(JSON.stringify(row.sno?row:b));
-                                handleData(a,row.sno?row:b,this.upBookFunction);
+                                handleData(a,row.sno?row:b,this.upBookedFunction);
                                 //刷新
                                 //location.reload();
                             }).catch(() => {
@@ -1680,6 +1699,11 @@
                     }
                 },
                 upBookFunction(result){
+                    // console.log(result);
+                    // alertMessage(this,'更新',result?'1':'4');
+                    this.getStatus();
+                },
+                upBookedFunction(result){
                     // console.log(result);
                     alertMessage(this,'更新',result?'1':'4');
                     this.getStatus();

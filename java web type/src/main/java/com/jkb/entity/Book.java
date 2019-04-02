@@ -5,11 +5,13 @@ import lombok.Data;
 //书籍表
 @Data
 public class Book {
-    private Integer code;
+    private long code;
 
     private String name;
 
     private Float price;
+
+    private Float webRec;
 
     private Float rec;
 

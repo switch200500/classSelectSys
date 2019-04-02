@@ -41,6 +41,16 @@ public class BookController {
         return book;
     }
 
+    @RequestMapping(value = "/update_book")
+    public Boolean upBook(long code) {
+        int rtn = bookService.updateBook(code);
+        if(rtn==1){
+            return Boolean.TRUE;
+        }else{
+            return Boolean.FALSE;
+        }
+    }
+
     @RequestMapping(value = "/update_booked")
     public Boolean handleBook( Booked booked) {
         int rtn = bookedService.updateBooked(booked);

@@ -18,8 +18,8 @@ public class BookServiceImpl  implements BookService{
         return bookMapper.getAllBook();
     }
 
-   /* @Override
-    public int updateBook(Book book) {
-        return bookMapper.updateBook(book);
-    }*/
+    @Override
+    public int updateBook(long code) {
+        return bookMapper.updateBook(code);
+    }
 }

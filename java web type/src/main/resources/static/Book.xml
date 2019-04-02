@@ -7,6 +7,7 @@
         <id column="code" property="code"/>
         <result column="name" property="name"/>
         <result column="price" property="price"/>
+        <result column="webRec" property="webRec"/>
         <result column="rec" property="rec"/>
         <result column="publish" property="publish"/>
         <result column="author" property="author"/>
@@ -15,16 +16,12 @@
         <result column="pubTime" property="pubTime"/>
         <result column="ISBN" property="ISBN"/>
 
-        <result column="Sno" property="Sno"/>
-        <result column="buy" property="buy"/>
-        <result column="personRec" property="personRec"/>
-
     </resultMap>
 
     <select id="getAllBook" resultMap="BookResultMap">
         select * from Book
     </select>
-    <!--<update id="updateBook" parameterType="com.jkb.entity.Book">-->
-        <!--update Book set buy=#{buy},personRec=#{personRec}  where code=#{code}-->
-    <!--</update>-->
+    <update id="updateBook" parameterType="com.jkb.entity.Book">
+        update Book set rec=(select AVG(personRec) from Booked where code=#{code})  where code=#{code}
+    </update>
 </mapper>
