@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录系统</title>
+    <link rel="stylesheet" href="/el-lib/quote/index.css">
+    <script src="/el-lib/quote/vue.min.js"></script>
+    <script src="/el-lib/quote/vue-resource.min.js"></script>
+    <script src="/el-lib/quote/index.js"></script>
+    <script src="/el-lib/jquery/jquery-2.0.0.min.js"></script>
+    <script src="/el-js/function.js"></script>
+
+    <style type="text/css">
+        .log{
+            padding: 100px 20px;
+            width: 400px;
+            margin: 100px auto;
+            text-align: center;
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="appLoading" style="display: block">
+        <img src="/images/refresh/refresh-bear.gif" alt="">
+    </div>
+    <div id="app">
+        <div class="log">
+            <el-form :model="userForm" ref="userForm" label-width="60px" class="demo-ruleForm">
+                <el-form-item label="学号" prop="Sno">
+                    <el-input v-model="userForm.Sno"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <!--blur	在 Input 失去焦点时触发-->
+                    <el-input type="password" v-model="userForm.password" ref="clearPass"  @keyup.enter.native="submitForm('userForm')"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('userForm')">登录</el-button>
+                    <el-button @click="resetForm('userForm')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+
+
+
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            userForm:{
+                Sno:'',
+                password:'',
+            },
+        },
+        methods:{
+            //AJAX返回方法
+            succecssfunction (result) {
+                var th = this;
+                var a = this.userForm;
+                var ref = this.$refs;
+                // console.log(result);//打印服务端返回的数据(调试用)
+                if (result) {
+                    alertMessage(this,'登陆','1');
+                    //sessionStorage也可存储Json对象：存储时，通过JSON.stringify()将对象转换为文本格式；
+                    // 读取时，通过JSON.parse()将文本转换回对象。
+                    sessionStorage.setItem('userMessage', JSON.stringify(this.userForm));
+                    window.location.href='./util';
+                }else{
+                    alertMessage(this,'用户名或密码错误,登录','4');
+                    this.userForm.password = '';
+                    this.$refs.clearPass.focus();
+                }
+
+            },
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        // console.log(JSON.stringify(this.userForm));
+                        handleData("/handle_login",this.userForm,this.succecssfunction);
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            }
+        },
+
+        directives: {
+            focus: {
+                //根据focusState的状态改变是否聚焦focus
+                update: function (el, value) {    //第二个参数传进来的是个json
+                    if (value) {
+                        el.focus()
+                    }
+                }
+            }
+        },
+
+        //模板被渲染前或模板编译进路由前调用
+        //在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图
+        created: function(){
+
+        },
+        //已完成模板已经渲染或el对应html渲染后
+        //在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作。
+        mounted: function(){
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('appLoading').style.display = 'none';
+        }
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.BookedMapper">
+    <!--3.容器配置-->
+    <resultMap id="BookedResultMap" type="com.jkb.entity.Booked">
+        <!--<id column="id" property="id"/>-->
+        <id column="code" property="code"/>
+        <result column="Sno" property="Sno"/>
+        <result column="buy" property="buy"/>
+        <result column="personRec" property="personRec"/>
+    </resultMap>
+
+    <select id="getAllBooked" resultMap="BookedResultMap">
+        select * from Booked where Sno=#{Sno}
+    </select>
+    <update id="updateBooked" parameterType="com.jkb.entity.Booked">
+        update Booked
+        set buy=#{buy},personRec=#{personRec}
+        where Sno=#{sno} and code=#{code}
+    </update>
+    <insert id="insertBooked" parameterType="com.jkb.entity.Booked">
+        INSERT INTO Booked(Sno,code,buy,personRec) VALUES (#{sno},#{code},#{buy},#{personRec})
+    </insert>
+   <!-- <delete id="deleteBooked" parameterType="long">
+      delete from Booked where where Sno=#{sno} and code=#{code}
+    </delete>-->
+</mapper>

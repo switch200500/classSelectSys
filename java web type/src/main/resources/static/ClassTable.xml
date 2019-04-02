@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.ClassTableMapper">
+    <!--3.容器配置-->
+    <resultMap id="ClassTableResultMap" type="com.jkb.entity.ClassTable">
+        <id column="id" property="id"/>
+        <result column="classTime" property="classTime"/>
+        <result column="Sno" property="Sno"/>
+        <result column="term" property="term"/>
+        <result column="monD" property="monD"/>
+        <result column="tuesD" property="tuesD"/>
+        <result column="wedD" property="wedD"/>
+        <result column="thursD" property="thursD"/>
+        <result column="friD" property="friD"/>
+        <result column="satD" property="satD"/>
+        <result column="sunD" property="sunD"/>
+    </resultMap>
+
+    <select id="getAllClassTable" resultMap="ClassTableResultMap">
+        select * from ClassTable where Sno=#{Sno} and term=#{term}
+    </select>
+    <update id="updateClassTable" parameterType="com.jkb.entity.ClassTable">
+        update ClassTable
+
+        <trim prefix="set" suffixOverrides=",">
+            <if test="monD != 0">
+                monD=#{monD},
+            </if>
+            <if test="tuesD != 0">
+                tuesD=#{tuesD},
+            </if>
+            <if test="wedD != 0">
+                wedD=#{wedD},
+            </if>
+            <if test="thursD != 0">
+                thursD=#{thursD},
+            </if>
+            <if test="friD != 0">
+                friD=#{friD},
+            </if>
+            <if test="satD != 0">
+                satD=#{satD},
+            </if>
+            <if test="sunD != 0">
+                sunD=#{sunD},
+            </if>
+        </trim>
+
+        where Sno=#{Sno} and term=#{term} and classTime=#{classTime}
+    </update>
+    <!-- <delete id="deleteBooked" parameterType="long">
+    /* set monD=#{monD},tuesD=#{tuesD},wedD=#{wedD},thursD=#{thursD},friD=#{friD},satD=#{satD},sunD=#{sunD}
+    */
+       delete from Booked where where Sno=#{sno} and code=#{code}
+     </delete>-->
+</mapper>

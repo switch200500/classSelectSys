@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.ClassMsgMapper">
+    <!--3.容器配置-->
+    <resultMap id="ClassMsgResultMap" type="com.jkb.entity.ClassMsg">
+        <id column="classCode" property="classCode"/>
+        <result column="classType" property="classType"/>
+        <result column="className" property="className"/>
+        <result column="classInstitute" property="classInstitute"/>
+        <result column="classTeacher" property="classTeacher"/>
+        <result column="selected" property="selected"/>
+        <result column="unselected" property="unselected"/>
+        <result column="developDirection" property="developDirection"/>
+        <result column="score" property="score"/>
+        <result column="classIntroduction" property="classIntroduction"/>
+
+        <!--<collection property="classTimePosition" ofType="com.jkb.entity.ClassTimePosition">
+            <id column="id" property="id"/>
+            <result column="campus" property="campus"/>
+            <result column="timePosition" property="timePosition"/>
+        </collection>-->
+
+    </resultMap>
+
+    <select id="getAllClassMsg" resultMap="ClassMsgResultMap">
+        select * from ClassMsg
+    </select>
+    <select id="getClassMsg" resultMap="ClassMsgResultMap">
+        select * from ClassMsg where classCode=#{classCode}
+    </select>
+    <update id="updateClassMsg" parameterType="com.jkb.entity.ClassMsg">
+        update ClassMsg set selected=#{selected},unselected=#{unselected}  where classCode=#{classCode}
+    </update>
+    <update id="updateClassMsgScore" parameterType="com.jkb.entity.ClassMsg">
+        update ClassMsg set score=(select AVG(personScore) from classUpdate where classCode = #{classCode})  where classCode=#{classCode}
+    </update>
+</mapper>

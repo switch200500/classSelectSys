@@ -1,0 +1,14 @@
+#连接池
+server:
+  port: 1196
+
+spring:
+  datasource:
+      name: test
+      url: jdbc:mysql://127.0.0.1:3306/bishe?serverTimezone=GMT%2B8
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  typeAliasesPackage: com.jkb.entity
+  mapperLocations: classpath:static/*.xml

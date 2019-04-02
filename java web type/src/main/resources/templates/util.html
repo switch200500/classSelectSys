@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/el-js/function.js"></script>
+    <script type="text/javascript">const no = checkLog();const termYear = getTerm(no);</script>
+    <!--<script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+    <script src="https://cdn.bootcss.com/element-ui/2.4.11/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+
+    <meta charset="UTF-8">
+    <!--<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />-->
+    <title>民大选课系统</title>
+    <link rel="stylesheet" href="/el-css/style.css">
+    <link rel="stylesheet" href="/el-lib/quote/index.css">
+    <script src="/el-lib/quote/vue.min.js"></script>
+    <script src="/el-lib/quote/vue-resource.min.js"></script>
+    <script src="/el-lib/quote/index.js"></script>
+    <script src="/el-lib/jquery/jquery-2.0.0.min.js"></script>
+    <!--*********路径从文件夹下开始写************-->
+
+    <style type="text/css">
+
+        .el-carousel__item{
+            height: 400px;
+            text-align: center;
+        }
+        .el-carousel__item h3 {
+            color: #475669;
+            font-size: 18px;
+            opacity: 0.75;
+            line-height: 400px;
+            margin: 0 ;
+        }
+
+        .el-carousel__item:nth-child(2n) {
+            background-color: #99a9bf;
+        }
+
+        .el-carousel__item:nth-child(2n+1) {
+            background-color: #d3dce6;
+        }
+        .el-tab-pane{
+            padding: 1%;
+        }
+        /*省略号*/
+        .ellipsis{
+            font: 24px bold;
+            color: black;
+            opacity: 0.5;
+            overflow: hidden
+        }
+        /*课程评价相关*/
+        .left{
+            float: left;
+        }
+        .right{
+            float: right;
+        }
+        .vertical-center{
+            display: flex;
+            align-items: center;
+        }
+        .e-tag{
+            width: 50%;
+            line-height: 54px;
+        }
+        /*书籍订购*/
+        .demo-table-expand {
+            font-size: 0;
+        }
+        .demo-table-expand label {
+            width: 90px;
+            color: #99a9bf;
+        }
+        .demo-table-expand .el-form-item {
+            margin-right: 0;
+            margin-bottom: 0;
+            width: 50%;
+        }
+        .el-form--inline .el-form-item__content {
+            /*display: inline-block;*/
+            vertical-align: middle;
+        }
+        /*span标签间距*/
+        .spanDistance{
+            margin-right: 10px;
+        }
+        .allowClick{
+            cursor: pointer
+        }
+        /*dropdown*/
+        .el-dropdown-link {
+            cursor: pointer;
+            color: #409EFF;
+        }
+        .el-icon-arrow-down {
+            font-size: 12px;
+        }
+        /*表单*/
+        .el-form-item .el-form-item__label{
+            padding-right: 20px !important;
+        }
+        /*溢出省略*/
+        .line-limit-length {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /*white-space: nowrap; //文本不换行，这样超出一行的部分被截取，显示...*/
+            height: 50px;
+            line-height: 24px;
+            width: 100%;
+            display:-webkit-box;
+            -webkit-box-orient:vertical;
+            -webkit-line-clamp:2;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="appLoading" style="display: block">
+        <img src="/images/refresh/refresh-bear.gif" alt="">
+    </div>
+    <div id="app" style="display: none">
+        <el-container>
+            <!--header-->
+            <el-header id="header">
+                <img src="/images/school_top.png" alt="" style="height: 60px">
+
+                <el-dropdown class=" right top" @command="handleCommand">
+                      <span class="el-dropdown-link">
+                          <el-button type="info" size="mini" circle >
+                                <img src="/images/head.png" alt="">
+                          </el-button>
+                          <span style="color: black">{{personalForm.sname}}</span>
+                          <i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="msg">
+                            <img src="/images/head2.png" alt="">
+                            <span>个人信息</span>
+                        </el-dropdown-item>
+                        <el-dropdown-item command="pass">
+                            <img src="/images/pass.png" alt="">
+                            <span>修改密码</span>
+                        </el-dropdown-item>
+                       <!-- <el-dropdown-item command="upload">
+                            <img src="/images/photo.png" alt="">
+                            <span>上传头像</span>
+                        </el-dropdown-item>-->
+                        <el-dropdown-item divided command="exit">
+                            <img src="/images/exit.png" alt="">
+                            <span>安全退出</span>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+
+                <!--个人信息-->
+                <el-dialog title="个人信息" :visible.sync="personalMsg">
+                    <el-form
+                            @submit.native.prevent
+                            :model="personalForm"
+                            :rules="personalRules"
+                            ref="personalForm"
+                            label-width="100px"
+                            class="demo-ruleForm">
+                        <el-form-item label="学号" prop="">
+                            <label>{{personalForm.sno}}</label>
+                        </el-form-item>
+                        <el-form-item label="姓名" prop="">
+                            <span>{{personalForm.sname}}</span>
+                        </el-form-item>
+                        <el-form-item label="性别" prop="">
+                            <span>{{personalForm.ssex}}</span>
+                        </el-form-item>
+                        <el-form-item label="出生日期" prop="">
+                            <span>{{personalForm.sbirth}}</span>
+                        </el-form-item>
+                        <el-form-item label="专业" prop="">
+                            <span>{{personalForm.sdept}}</span>
+                        </el-form-item>
+                        <el-form-item label="学院" prop="">
+                            <span>{{personalForm.institute}}</span>
+                        </el-form-item>
+                        <el-form-item label="班级" prop="">
+                            <span>{{personalForm.sclass}}</span>
+                        </el-form-item>
+                        <el-form-item label="电话" prop="phone">
+                            <el-input
+                                    v-if="isAlter.phone"
+                                    v-model="personalForm.phone"
+                                    @keyup.enter.native="changeInput('phone')"
+                                    clearable
+                            ></el-input>
+                            <div v-else>
+                                <span>{{personalForm.phone}}</span>
+                                <el-button type="text" icon="el-icon-edit-outline" @click="isAlter.phone=true"></el-button>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="邮箱" prop="email">
+                            <el-input
+                                    v-if="isAlter.email"
+                                    v-model="personalForm.email"
+                                    @keyup.enter.native="changeInput('email')"
+                                    clearable
+                            ></el-input>
+                            <div v-else>
+                                <span>{{personalForm.email}}</span>
+                                <el-button type="text" icon="el-icon-edit-outline" @click="isAlter.email=true"></el-button>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="登录密码">
+                            <el-button
+                                    type="text"
+                                    icon="el-icon-edit-outline"
+                                    @click="isAlter.password = true"
+                            >点击修改</el-button>
+
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="personalMsg = false">取 消</el-button>
+                        <el-button type="primary" @click="submitForm('personalForm')">确 定</el-button>
+                    </div>
+                </el-dialog>
+
+                <!--修改密码-->
+                <el-dialog
+                        width="40%"
+                        title="修改密码"
+                        :visible.sync="isAlter.password"
+                        append-to-body>
+
+                    <el-form
+                            @submit.native.prevent
+                            :model="passForm"
+                            :rules="passRule"
+                            ref="passForm"
+                            label-width="120px"
+                            class="demo-ruleForm"
+                    >
+                        <el-form-item label="旧密码" prop="oldPass">
+                            <el-input
+                                    :type="passForm.show.old?'text':'password'"
+                                    v-model="passForm.oldPass"
+                                    placeholder="请输入旧密码"
+                            >
+                                <img
+                                        :src="passForm.show.old?'/images/show.png':'/images/hide.png'"
+                                        slot="suffix"
+                                        alt=""
+                                        style="margin: 10px 0;"
+                                        @click="passForm.show.old=!passForm.show.old"
+                                >
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="密码" prop="newPass">
+                            <el-input
+                                    :type="passForm.show.new?'text':'password'"
+                                    v-model="passForm.newPass"
+                                    placeholder="请输入新密码"
+                            >
+                                <img
+                                        :src="passForm.show.new?'/images/show.png':'/images/hide.png'"
+                                        slot="suffix"
+                                        alt=""
+                                        style="margin: 10px 0;"
+                                        @click="passForm.show.new=!passForm.show.new"
+                                >
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="确认密码" prop="checkPass">
+                            <el-input
+                                    :type="passForm.show.check?'text':'password'"
+                                    v-model="passForm.checkPass"
+                                    placeholder="请确认密码"
+                            >
+                                <img
+                                        :src="passForm.show.check?'/images/show.png':'/images/hide.png'"
+                                        slot="suffix"
+                                        alt=""
+                                        style="margin: 10px 0;"
+                                        @click="passForm.show.check=!passForm.show.check"
+                                >
+                            </el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button type="primary" @click="submitForm('passForm')">确定</el-button>
+                            <el-button @click="">取消</el-button>
+                        </el-form-item>
+                    </el-form>
+
+                </el-dialog>
+            </el-header>
+            <!--content-->
+            <el-main id="content">
+                <el-tabs type="border-card" v-model="tabIndex">
+                    <!--首页-->
+                    <el-tab-pane name="1">
+                        <span slot="label"><i class="el-icon-menu"></i> 首页</span>
+
+                        <el-carousel :interval="5000" height="400px">
+                            <el-carousel-item v-for="item in 5" :key="item">
+                                <a :href="lunboSrc[item]">
+                                    <img :src="'/images/lunbo/'+item+'.jpg'" alt="" style="width: 100%">
+                                </a>
+                            </el-carousel-item>
+                        </el-carousel>
+
+                    </el-tab-pane>
+
+                    <!--课表-->
+                    <el-tab-pane name="2">
+                        <span slot="label"><i class="el-icon-date"></i> 我的课表</span>
+
+                        <el-cascader
+                                :options="yTermOptions"
+                                v-model="selectYearTerm"
+                                @change="changeTerm"
+                        ></el-cascader>
+
+                        <el-table
+                                :data="classTableData"
+                                style="width: 100%">
+                            <el-table-column
+                                    label="上课时间"
+                                    align="center"
+                                    fixed
+                                    prop="classTime">
+                                <template slot-scope="scope">
+                                    <h3>{{sTime[scope.row.classTime]}}</h3>
+                                    <div v-for="item in cTime[scope.row.classTime]">{{item}}</div>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    label="星期一"
+                                    prop="monD">
+                                <template slot-scope="scope">
+                                    <weekday v-if="scope.row.monD" :msg="scope.row.monDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    label="星期二"
+                                    prop="tuesD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.tuesD" :msg="scope.row.tuesDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="星期三"
+                                    prop="wedD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.wedD" :msg="scope.row.wedDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    label="星期四"
+                                    prop="thursD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.thursD" :msg="scope.row.thursDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="星期五"
+                                    prop="friD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.friD" :msg="scope.row.friDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="星期六"
+                                    prop="satD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.satD" :msg="scope.row.satDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="星期日"
+                                    prop="sunD">
+                                <template  slot-scope="scope">
+                                    <weekday v-if="scope.row.sunD" :msg="scope.row.sunDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+
+                    <!--选课信息-->
+                    <el-tab-pane name="3">
+                        <span slot="label"><i class="el-icon-tickets"></i>课程信息</span>
+                        <div>
+                            <p  class="left" style="color:red;margin-top: -5px;">
+                                上课书籍默认 <span style="font-size: 20px;font-weight: bold;">不选购</span>，需要购书的同学请前往书籍采购处处理,也可前往学校旧书店购买书籍。
+                                请大家爱护资源争取重复利用
+                                <el-button @click="changTab('4')">前往选购书籍</el-button>
+                            </p>
+                            <p class="right"  style="margin-top: -5px;">
+                                <el-button @click="changeMore('select')" icon="el-icon-check" circle title="选择已勾选课程"></el-button>
+                                <el-button @click="changeMore('collect')" icon="el-icon-plus" circle title="收藏已勾选课程"></el-button>
+                            </p>
+                        </div>
+                        <el-table
+                                :data="classSelectData.filter(data => !classSearch
+                                    || (data.classCode += '').toLowerCase().includes(classSearch.toLowerCase())
+                                    || data.className.toLowerCase().includes(classSearch.toLowerCase())
+                                    || data.classTeacher.toLowerCase().includes(classSearch.toLowerCase())
+                                    || data.classInstitute.toLowerCase().includes(classSearch.toLowerCase())
+                                    )"
+                                style="width: 100%"
+                                @selection-change="handleSelectionChange"
+                        >
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="top" inline class="demo-table-expand" >
+                                        <el-form-item label="课程介绍" style="width: 100%;">
+                                            {{props.row.classIntroduction}}
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    type="selection"
+                                    width="55"
+                                    >
+                            </el-table-column>
+                            <el-table-column
+                                    label="课程代码"
+                                    prop="classCode"
+                                    sortable
+                                    width="103"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="课程类型"
+                                    prop="classType"
+                                    :filters="classType"
+                                    :filter-method="filterHandler"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="课程名"
+                                    prop="isInstituteRc"
+                                    :filters="className"
+                                    :filter-method="filterHandler"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.className}}</span>
+                                    <el-tag v-if="scope.row.isInstituteRc" type="success">学院推荐</el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="上课时间地点"
+                                    prop="classTimePosition"
+                                    :filters="classCampus"
+                                    :filter-method="filterHandler"
+                                    width="152"
+                            >
+                                <template slot-scope="scope">
+                                    <el-tag
+                                            v-for="(c,ind) in scope.row.classTimePosition"
+                                            style="height: 100%;width:100%">
+                                        <div>{{c.campus=='new'?'新校区':'老校区'}}</div>
+                                        <div v-for="(item,i) in c.timePosition">
+                                            <span style="margin-right: 3px">{{wTime[item.weekD]+sTime[item.time]}}</span>
+                                            <span>{{item.position}}</span>
+                                        </div>
+                                    </el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="开课学院"
+                                    prop="classInstitute"
+                                    :filters="classInstitute"
+                                    :filter-method="filterHandler"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="上课老师"
+                                    prop="classTeacher"
+                                    width="80"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="人数"
+                                    prop="unselected"
+                                    sortable
+                                    width="73"
+                            >
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.selected+'/'+(scope.row.unselected+scope.row.selected)}}</span>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    align="right"
+                            >
+                                <template slot="header" slot-scope="scope">
+                                    <el-input
+                                            v-model="classSearch"
+                                            size="mini"
+                                            clearable
+                                            placeholder="输入关键字(课程代码，名称，老师,学院名称)搜索"/>
+                                </template>
+
+                                <el-table-column
+                                        label="发展方向"
+                                        prop="developDirection"
+                                        width="115"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-tag
+                                                v-for="(item,index) in scope.row.developDirection"
+                                                v-if="index<3"
+                                                style="margin-right: 2px;cursor: pointer"
+                                                :title="item"
+
+                                        >
+                                            <span @click="view('5',item)">{{item}}</span>
+                                        </el-tag>
+                                        <el-button
+                                                class="ellipsis"
+                                                type="text"
+                                                title="点击查更多发展方向"
+                                                @click="changTab('5')"
+                                        >....</el-button>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="课程评价"
+                                        prop="score"
+                                        sortable
+                                        width="160"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-rate
+                                                v-model="scope.row.score"
+                                                disabled
+                                                show-score
+                                                text-color="#ff9900"
+                                                score-template="{value}">
+                                        </el-rate>
+                                        <div>
+                                            <el-tag
+                                                    v-for="(item,index) in scope.row.tag"
+                                                    v-if="index<3"
+                                                    style="margin-right: 2px;"
+                                                    :title="item.text"
+                                            >
+                                                {{item.text}}
+                                            </el-tag>
+                                            <el-button
+                                                    class="ellipsis"
+                                                    type="text"
+                                                    title="点击查更多评价"
+                                                    @click="window.open('./class_judge?classCode='+scope.row.classCode)"
+                                            >....</el-button>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="选课状态"
+                                        prop="classUp.classSelect"
+                                        :filters="classSelect"
+                                        :filter-method="filterHandler"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-tag :type=scope.row.classUp.classSelect?'info':'danger'>
+                                            {{scope.row.classUp.classSelect?'已选':'未选'}}
+                                        </el-tag>
+
+                                        <div v-if="scope.row.classType!='专业必修课'&&scope.row.classType!='通识必修课'">
+                                            <el-button
+                                                    type="text"
+                                                    v-if="scope.row.classUp.classSelect"
+                                                    :style=isSTime?fontSt:""
+                                                    :disabled=!isSTime?true:false
+                                                    @click="changeSelected('select',scope.row)"
+                                            >取消选课</el-button>
+                                            <el-button
+                                                    v-else
+                                                    type="text"
+                                                    @click="changeSelected('select',scope.row)"
+                                                    :disabled=!isSTime?true:false
+                                            >选择课程</el-button>
+                                        </div>
+
+                                        <div v-else>
+                                            <span :style="fontSt">必修课不可选择</span>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+
+                                <el-table-column
+                                        label="收藏"
+                                        prop="classUp.classCollect"
+                                        width="62"
+                                        :filters="classCollect"
+                                        :filter-method="filterHandler"
+                                >
+                                    <template slot-scope="scope">
+                                        <el-button
+                                                :type="scope.row.classUp.classCollect?'warning':'info'"
+                                                size="mini"
+                                                icon="el-icon-star-off"
+                                                circle
+                                                @click="changeSelected('collect',scope.row)">
+
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <!--书籍采购-->
+                    <el-tab-pane name="4">
+                        <span slot="label"><i class="el-icon-goods"></i> 书籍采购</span>
+
+                        <el-table
+                                :data="classBook.filter(data => !bookSearch
+                                    || data.name.toLowerCase().includes(bookSearch.toLowerCase())
+                                )"
+                                style="width: 100%">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="left" inline class="demo-table-expand">
+                                        <el-form-item label="书籍名称">
+                                            <span>{{ props.row.name }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="ISBN">
+                                            <span>{{ props.row.isbn}}</span>
+                                        </el-form-item>
+                                        <el-form-item label="出版社">
+                                            <span>{{ props.row.publish }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="出版时间">
+                                            <span>{{ props.row.pubTime}}</span>
+                                        </el-form-item>
+                                        <el-form-item label="作者">
+                                            <span v-for="au in props.row.author" class="spanDistance">{{au}}</span>
+                                        </el-form-item>
+                                        <el-form-item label="类别">
+                                            <span>{{ props.row.type }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="页数">
+                                            <span>{{ props.row.page }}</span>
+                                        </el-form-item>
+                                        <el-form-item label="个人评价">
+                                            <el-rate
+                                                    v-model="props.row.personRec"
+                                                    @change="updateBook('book_perRec',props.row)"
+                                                    show-score
+                                                    allow-half
+                                                    text-color="#ff9900"
+                                                    :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                                    score-template="{value}">
+                                            </el-rate>
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+                                    label="名称"
+                                    prop="name">
+                            </el-table-column>
+                            <el-table-column
+                                    label="价格"
+                                    prop="price"
+                                    sortable
+                            >
+                                <template slot-scope="scope">
+                                    <span style="font: 20px bold;color:#f7ba2a">¥</span>
+                                    <span>{{scope.row.price}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="推荐指数"
+                                    sortable
+                                    prop="rec">
+                                <template slot-scope="scope">
+                                    <el-rate
+                                            v-model="scope.row.rec"
+                                            disabled
+                                            show-score
+                                            text-color="#ff9900"
+                                            score-template="{value}">
+                                    </el-rate>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    align="center"
+                                    prop="buy"
+                                    :filters="buyBook"
+                                    :filter-method="filterHandler"
+                                    filter-placement="bottom-end"
+                            >
+                                <template slot="header" slot-scope="scope">
+                                    <el-input
+                                            v-model="bookSearch"
+                                            size="mini"
+                                            clearable
+                                            style="width: 80%"
+                                            placeholder="输入关键字搜索"/>
+                                </template>
+                                <template slot-scope="scope">
+                                    <el-button
+                                            :type="scope.row.buy?'warning':'info'"
+                                            size="mini"
+                                            icon="el-icon-goods"
+                                            @click="updateBook('book_buy',scope.row)"
+                                            :title=scope.row.buy?'点击取消订购':'点击订购'
+                                    >
+                                        {{scope.row.buy?'已订':'未订'}}
+                                    </el-button>
+                                    <!--<el-button type="text" disabled>{{scope.row.buy?'已订':'未订'}}</el-button>-->
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <el-pagination
+                                class="right"
+                                layout="prev, pager, next,->"
+                                page-size="2"
+                                :total="classBook.length">
+                        </el-pagination>
+
+                    </el-tab-pane>
+
+                    <!--职业规划-->
+                    <el-tab-pane name="5">
+                        <span slot="label"><i class="el-icon-mobile-phone"></i> 职业规划</span>
+                        <el-table
+                                :data="jobDep.filter(data => !jobSearch
+                                    || data.position.toLowerCase().includes(jobSearch.toLowerCase())
+                                    || data.salary.toLowerCase().includes(jobSearch.toLowerCase())
+                                )"
+                                style="width: 100%">
+                            <el-table-column
+                                    type="expand"
+                                    width="30"
+                                    prop="isRec"
+                                    :filters="jobRec"
+                                    :filter-method="filterHandler"
+                                    filter-placement="bottom-start"
+                            >
+                                <!--prop="type"
+                                :filters="jobType"
+                                :filter-method="filterHandler"
+                                filter-placement="bottom-start"-->
+                                <template slot-scope="props">
+                                    <el-form label-position="top" inline class="demo-table-expand" >
+                                        <el-form-item label="职业介绍" style="width: 100%;">
+                                            {{props.row.jobIntroduction}}
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+                            </el-table-column>
+
+                            <el-table-column
+
+                            >
+                                <template slot="header" slot-scope="scope">
+                                    <el-input
+                                            v-model="jobSearch"
+                                            style="padding-left: 0;width: 80%"
+                                            size="mini"
+                                            clearable
+                                            placeholder="输入职业名称搜索"/>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.position}}</span>
+                                    <el-tag v-if="scope.row.isRec" type="success">专业推荐</el-tag>
+                                </template>
+                            </el-table-column>
+
+                            <!--<el-table-column
+                                    label="职位"
+                                    prop="position">
+                                <template slot-scope="scope">
+                                    <span>{{scope.row.position}}</span>
+                                    <el-tag v-if="scope.row.isRec" type="success">专业推荐</el-tag>
+                                </template>
+                            </el-table-column>-->
+                            <el-table-column
+                                    label="推荐课程"
+                                    prop="recLesson">
+                                <template slot-scope="scope">
+                                    <el-tag v-for="les in scope.row.recLesson"  class="spanDistance">
+                                        <span @click="view('3',les)" class="allowClick">{{les}}</span>
+                                    </el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="推荐书籍"
+                                    prop="recBook">
+                                <template slot-scope="scope">
+                                    <!--@click="openNewSearch(bk)"-->
+                                    <span
+                                            v-for="bk in scope.row.recBook"
+                                            class="spanDistance allowClick"
+                                            @click="view('4',bk)"
+                                            style="color: #0000ff;"
+                                    >{{"《"+bk+"》"}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    align="center"
+                                    label="应届生工资"
+                                    prop="salary"
+                                    sortable
+                            >
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+
+                </el-tabs>
+            </el-main>
+            <!--footer-->
+            <el-footer id="footer">
+
+            </el-footer>
+        </el-container>
+    </div>
+
+    <script type="text/x-template" id="aaa">
+        <div>
+            <el-popover
+                    placement="top-start"
+                    :title="msg.className"
+                    width="200"
+                    trigger="hover"
+            >
+                <div>
+                    <div>{{msg.classIntroduction.substr(0, 40)+'...'}}</div>
+                    <el-button type="text" icon="el-icon-tickets" size="mini" @click="view('3',(msg.classCode+= ''))">详细信息</el-button>
+                </div>
+                <h3 slot="reference">{{msg.className}}</h3>
+            </el-popover>
+            <span>{{msg.classTeacher}}</span>
+            <el-tag
+                    v-for="(c,ind) in msg.classTimePosition"
+                    style="height: 100%;width:100%">
+                <div>{{c.campus=='new'?'新校区':'老校区'}}</div>
+                <div v-for="(item,i) in c.timePosition">
+                    <span style="margin-right: 3px">{{wtime[item.weekD]+stime[item.time]}}</span>
+                    <span>{{item.position}}</span>
+                </div>
+            </el-tag>
+        </div>
+    </script>
+
+    <script>
+
+        var weekday=Vue.extend({
+            props: ['data', 'msg','stime','wtime'],//配置数据传递
+            template:'#aaa',
+            data(){
+                return {}   //必须return，不然会报错，不能return未定义值，如return this.data报错(props的data未传递)
+                // 谷歌Cannot read property '__ob__' of undefined，火狐TypeError: "e._data is undefined"
+            },
+            methods: {
+                view:function(a,b){
+                    this.$emit('view',a,b);
+                }
+            },
+            created: function(){
+               /* console.log(this.day);
+                console.log(this.msg);*/
+                // console.log(this.stime);
+            },
+            mounted:function(){
+                // console.log(this.msg);
+                // console.log('aaaaaaaaaaaaaaaaaa');
+            }
+        });
+
+        var app = new Vue({
+            el: '#app',
+            data(){
+                //旧密码
+                var validateOldPass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请输入密码'));
+                    } else {
+                        if (value !== this.personalForm.password) {
+                            callback(new Error('密码输入不正确!'));
+                        }
+                        callback();
+                    }
+                };
+                //密码
+                var validateNewPass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请输入密码'));
+                    } else if (value === this.passForm.oldPass) {
+                        callback(new Error('新密码不能与旧密码相同'));
+                    } else {
+                        if (this.passForm.checkPass !== '') {
+                            this.$refs.passForm.validateField('checkPass');
+                        }
+                        callback();
+                    }
+                };
+                //确认密码
+                var validateCheckPass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请再次输入密码'));
+                    } else if (value !== this.passForm.newPass) {
+                        callback(new Error('两次输入密码不一致!'));
+                    } else {
+                        callback();
+                    }
+                };
+                return {
+                    // loading: true,
+                    lunboSrc:{
+                        '1':'http://www.swun.edu.cn/#',
+                        '2':'http://cpc.people.com.cn/n1/2019/0224/c419242-30898683.html',
+                        '3':'http://www.swun.edu.cn/#',
+                        '4':'https://mp.weixin.qq.com/s/rsWS6Rd5Op19JBjTWBRxsQ',
+                        '5':'http://news.swun.edu.cn/info/1004/48425.htm',
+                    },
+                    personalForm:{
+                        sno:'1344241425',
+                        password:'1111',
+                        sname:'',
+                        ssex:'女',
+                        sbirth:'1997-01-10',
+                        sdept:'计算机科学与技术',
+                        institute:'',
+                        sclass:'1501班',
+                        phone:'13612345678',
+                        email:'123@13.com',
+                    },
+                    personalRules:{
+                        phone: [
+                            { validator: validateTel, trigger: 'change' }
+                        ],
+                        email: [
+                            { validator: validateEmail, trigger: 'change' }
+                        ],
+                    },
+                    personalMsg: false,
+                    isAlter:{
+                        phone: false,
+                        email: false,
+                        password: false,
+                    },
+                    passForm:{
+                        oldPass:'',
+                        newPass:'',
+                        checkPass:'',
+                        show: {
+                            old:false,
+                            new:false,
+                            check: false,
+                        },
+                    },
+                    passRule:{
+                        oldPass: [
+                            { validator: validateOldPass, trigger: 'blur' }
+                        ],
+                        newPass: [
+                            { validator: validateNewPass, trigger: 'blur' }
+                        ],
+                        checkPass: [
+                            { validator: validateCheckPass, trigger: 'blur' }
+                        ]
+                    },
+                    rtn: false,//判断是否修改了密码
+                    //是否选课时间
+                    isSTime:true,
+                    fontSt:"color: #80859c",
+                    tabIndex: '1',
+                    //课表相关
+                    cTime:{ //课表对应时间
+                        '1':['8:30~9：15','9：20~10.05'],
+                        '2':['10:25~11.10','11:15~12：00'],
+                        '3':['14:00~14:45','14:50~15：35'],
+                        '4':['15:55~16:40','16:45~17：30'],
+                        '5':['19:00~19:45','19:50~20：35'],
+                    },
+                    sTime: {    //课表对应节数
+                        '1': '上午1,2节',
+                        '2': '上午3,4节',
+                        '3': '下午5,6节',
+                        '4': '下午7,8节',
+                        '5': '晚上9,10节',
+                    },
+                    wTime:{ //课表属性对应中文
+                        monD:'周一',
+                        tuesD:'周二',
+                        wedD:'周三',
+                        thursD:'周四',
+                        friD:'周五',
+                        satD:'周六',
+                        sunD:'周日',
+                    },
+                    selectYearTerm:['year'+termYear.yTermValue,termYear.term],
+                    yTermOptions:[
+                        {
+                            value: 'year1',
+                            label: termYear.year+'-'+(termYear.year+1)+'学年',
+                            children: [{
+                                value: 1,
+                                label: '第一学期',
+                            },{
+                                value: 2,
+                                label: '第二学期',
+                            }],
+                        }, {
+                            value: 'year2',
+                            label: (termYear.year+1)+'-'+(termYear.year+2)+'学年',
+                            children: [{
+                                value: 3,
+                                label: '第一学期',
+                            },{
+                                value: 4,
+                                label: '第二学期',
+                            }],
+                        }, {
+                            value: 'year3',
+                            label: (termYear.year+2)+'-'+(termYear.year+3)+'学年',
+                            children: [{
+                                value: 5,
+                                label: '第一学期',
+                            },{
+                                value: 6,
+                                label: '第二学期',
+                            }],
+                        }, {
+                            value: 'year4',
+                            label: (termYear.year+3)+'-'+(termYear.year+4)+'学年',
+                            children: [{
+                                value: 7,
+                                label: '第一学期',
+                            },{
+                                value: 8,
+                                label: '第二学期',
+                            }],
+                        },
+                    ],
+                    classTableData:[
+                        {
+                            classTime:'1',
+                            monD:'',
+                            tuesD:'',
+                            tuesDM:[],
+                            wedD:'',
+                            thursD:'',
+                            friD:'',
+                            satD:'',
+                            sunD:'',
+                        },
+                        {
+                            classTime:'2',
+                        },
+                        {
+                            classTime:'3',
+                        },
+                        {
+                            classTime:'4',
+                        },
+                        {
+                            classTime:'5',
+                        }
+                    ],
+                    //选课表相关
+                    classSelectData:[
+                        {
+                            classCode:'1',
+                            classType:'通识选修课',
+                            className:'a',
+                            isInstituteRc: false,
+                            classTimePosition: [{
+                                campus:'new',
+                                timePosition:[{
+                                    time:'1',
+                                    weekD: '周三',
+                                    position:'bw221',
+                                },{
+                                    time:'2',
+                                    weekD: '周一',
+                                    position:'bx211',
+                                }],
+                            },{
+                                campus:'old',
+                                timePosition:[{
+                                    time:'3',
+                                    weekD: '周五',
+                                    position:'bs227',
+                                }],
+                            }
+                            ],
+                            classInstitute:'计算机学院',
+                            classTeacher:'1',
+                            selected: '4',
+                            unselected: '20',
+                            developDirection:['java工程师','算法工程师'],
+                            score: '3.7',
+                            tag:[
+                                {text: '拖堂'},
+                                {text: '难度较高'},
+                                {text: '考试简单'},
+                                {text: '有趣'}
+                            ],
+                            classUp:{
+                                classSelect: true,
+                                classCollect: true,
+                            },
+
+                            classIntroduction:'\n' +
+                                '操作系统（英语：operating system，缩写作 OS）是管理计算机硬件与软件资源的计算机程序，' +
+                                '同时也是计算机系统的内核与基石。操作系统需要处理如管理与配置内存、决定系统资源供需的优先次序、' +
+                                '控制输入与输出设备、操作网络与管理文件系统等基本事务。操作系统也提供一个让用户与系统交互的操作界面。\n'
+                                +
+                                '操作系统的类型非常多样，不同机器安装的操作系统可从简单到复杂，可从移动电话的嵌入式系统到超级计算机的' +
+                                '大型操作系统。许多操作系统制造者对它涵盖范畴的定义也不尽一致，例如有些操作系统集成了图形用户界面，' +
+                                '而有些仅使用命令行界面，而将图形用户界面视为一种非必要的应用程序。\n'
+                        },
+                        {
+                            classCode:'2',
+                            classType:'专业必修课',
+                            className:'b',
+                            isInstituteRc: true,
+                            classTimePosition:[{
+                                campus:'new',
+                                timePosition:[{
+                                    time:'1',
+                                    weekD: '周三',
+                                    position:'bw221',
+                                },{
+                                    time:'2',
+                                    weekD: '周一',
+                                    position:'bx211',
+                                }],
+                            },
+                            ],
+                            classInstitute:'经济学院',
+                            classTeacher:'2',
+                            selected: '3',
+                            unselected: '30',
+                            developDirection:['java工程师','算法工程师'],
+                            score: '1.7',
+                            tag:[
+                                {text: '拖堂'},
+                                {text: '难度较高'},
+                                {text: '考试简单'},
+                                {text: '有趣'}
+                            ],
+                            classUp:{
+                                classSelect: false,
+                                classCollect: true,
+                            },
+                            classIntroduction:'',
+                        },
+                        {
+                            classCode:'3',
+                            classType:'专业选修课',
+                            className:'c',
+                            isInstituteRc: false,
+                            classTimePosition:[{
+                                campus:'old',
+                                timePosition:[{
+                                    time:'1',
+                                    weekD: '周三',
+                                    position:'bw221',
+                                },{
+                                    time:'2',
+                                    weekD: '周三',
+                                    position:'bx211',
+                                }],
+                            },
+                            ],
+                            classInstitute:'经济学院',
+                            classTeacher:'2',
+                            selected: '3',
+                            unselected: '30',
+                            developDirection:['java工程师','算法工程师'],
+                            score: '1.7',
+                            tag:[
+                                {text: '拖堂'},
+                                {text: '难度较高'},
+                                {text: '考试简单'},
+                                {text: '有趣'}
+                            ],
+                            classUp:{
+                                classSelect: false,
+                                classCollect: false,
+                            },
+                            classIntroduction:'',
+                        }
+                    ],
+                    classSearch:'',
+                    bookSearch: '',
+                    jobSearch:'',
+                    multipleSelection: [],
+
+                    //书籍订购
+                    classBook:[
+                        {
+                            name: '计算机导论',
+                            code:'011',
+                            price: '48',
+                            rec:  2.7,
+                            buy: false,
+                            publish: '清华大学出版社',
+                            author: ['叶青','李强'],
+                            type: '计算机相关',
+                            page: '333',
+                            pubTime: '2007-1-1',
+                            isbn: '9787121050817',
+                            personRec: '',
+                        },
+                        {
+                            name: 'c语言基础',
+                            code:'021',
+                            price: '78',
+                            rec:  4.7,
+                            buy: true,
+                            publish: '清华大学出版社',
+                            author: ['叶青','李强'],
+                            type: '计算机相关',
+                            page: '333',
+                            pubTime: '2007-1-1',
+                            isbn: '9787121050817',
+                            personRec: '',
+                        }
+                    ],
+                    //职业规划相关
+                    jobDep:[
+                        {
+                            id: 112,
+                            position:'前端开发',
+                            type: 'it',
+                            isRec: false,
+                            recLesson:['动态网站','编译原理'],
+                            recBook:['html手册','JavaScript手册'],
+                            salary:'4000-8000',
+                            jobIntroduction:'本书是一本学习计算机科学与技术学科的入门教材，其主要内容包括：计算机基础知识，计算机硬件系统，计算机软件系统，数据库与信息系统，多媒体技术基础，通信与网络基础，信息安全与道德规范等。本书内容新颖，讲述深入浅出，并配有大量的习题及实验教材《计算机导论实验指导书》。\n' +
+                                '本书既可作为高等学校计算机专业的计算机导论教材，又可作为非计算机专业的计算机基础教材，也可作为计算机各类社会培训的教材。 [1]  ',
+                        },
+                        {
+                            id: 2332,
+                            position:'java工程师',
+                            type: '文员',
+                            isRec: true,
+                            recLesson:['java','编译原理'],
+                            recBook:['java手册','算法手册'],
+                            salary:'4000-8000',
+                            jobIntroduction:'aaaaaaaaaaaaaaaaa',
+                        }
+                    ],
+                    //筛选选项
+                    //课程类型
+                    classType:[
+                        {text: '专业必修课', value: '专业必修课'},
+                        {text: '专业选修课', value: '专业选修课'},
+                        {text: '通识必修课', value: '通识必修课'},
+                        {text: '通识选修课', value: '通识选修课'}
+                    ],
+                    //课程地点
+                    classCampus:[
+                        {text: '新校区', value: 'new'},
+                        {text: '老校区', value: 'old'},
+                    ],
+                    //开课学院
+                    classInstitute:[
+                        {text: '计算机学院', value: '计算机学院'},
+                        {text: '经济学院', value: '经济学院'},
+                        {text: '文学院', value: '文学院'},
+                        {text: '药学院', value: '药学院'},
+                        {text: '艺术学院', value: '艺术学院'}
+                    ],
+                    //选课状态
+                    classSelect:[
+                        {text: '已选', value: 1},
+                        {text: '未选', value: 0},
+                    ],
+                    //收藏状态
+                    classCollect:[
+                        {text: '已收藏', value: 1},
+                        {text: '未收藏', value: 0},
+                    ],
+                    //课程名
+                    className:[
+                        {text: '学院推荐', value: true},
+                        {text: '其他', value: false},
+                    ],
+                    //职位
+                    jobType:[
+                        {text: '文员', value: '文员'},
+                        {text: '网络科技', value: '网络科技'},
+                        {text: '管理', value: '管理'},
+                        {text: '专业技术', value: '专业技术'},
+                    ],
+                    //职业推荐
+                    jobRec:[
+                        {text: '专业推荐', value: 1},
+                        {text: '其他', value: 0},
+                    ],
+                    buyBook:[
+                        {text: '已购书籍', value: 1},
+                        {text: '未购书籍', value: 0},
+                    ],
+                };
+            },
+            components:{ //注册组件
+                'weekday':weekday,
+            },
+            methods:{
+                /***
+                 *个人信息相关
+                 */
+
+                //在表单验证正确后回车事件切换输入框为纯文字
+                changeInput(a){
+                    this.$refs['personalForm'].validate((valid) => {
+                        if (valid) {
+                            this.isAlter[a] = false;
+                        }
+                    });
+                },
+                //提交表单
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // console.log("aaaa"+JSON.stringify(this.personalForm));
+                            //只更新一次，防止出现个人信息点到修改密码更新两次
+                            if(formName == 'passForm'){
+                                this.rtn = true;
+                                this.personalForm.password = this.passForm.checkPass;
+                                if(!this.personalMsg){//只打开修改密码界面
+                                    handleData("/update_student",this.personalForm,this.upMsgFunction);
+                                    this.resetForm('passForm');
+                                }
+                                this.isAlter.password = false;
+                            }else{
+                                handleData("/update_student",this.personalForm,this.upMsgFunction);
+                                this.personalMsg = false;
+                            }
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                //清空表单
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                },
+                //个人信息处理下拉框点击事件
+                handleCommand(item) {
+                    switch(item){
+                        case 'msg':
+                            this.personalMsg = true;
+                            break;
+                        case 'pass':
+                            this.isAlter.password = true;
+                            break;
+                        case 'upload':
+
+                            break;
+                        case 'exit':
+                            //清除所有sessionStorage.clear();
+                            sessionStorage.removeItem('userMessage');
+                            window.location.href='./login';
+                            break;
+                        default:
+                            break;
+                    }
+                },
+
+                /***
+                 *课程信息相关
+                 */
+
+                //查看课程详细信息
+                view(index,msg){
+                    // console.log(index+msg);
+                    this.changTab(index);
+                    switch(index){
+                        case '3':
+                            this.classSearch = msg;
+                            break;
+                        case '4':
+                            this.bookSearch = msg;
+                            break;
+                        case '5':
+                            this.jobSearch = msg;
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                //搜索百度
+                openNewSearch(bd){
+                    window.open('https://www.baidu.com/baidu?wd='+bd+'&tn=monline_dg&ie=utf-8')
+                },
+                //更新书籍信息
+                updateBook(action,row){
+                    let a = row.sno?'/update_booked':'/insert_booked';
+                    //console.log("aaaaa"+JSON.stringify(row));
+                    switch(action){
+                        case 'book_perRec':
+                            // insert
+                            let b = {
+                                sno: no,
+                                code: row.code,
+                                buy: 0,
+                                personRec: row.personRec,
+                            };
+                            handleData(a,row.sno?row:b,this.upBookFunction);
+                            break;
+                        case 'book_buy':
+                            this.$confirm((row.buy?'取消订购':'订购书籍')+'是否继续?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                row.buy = row.buy?0:1;
+                                // console.log("bbbbbbbbbbbb"+row.buy+a);
+                                let b = {
+                                    sno: no,
+                                    code: row.code,
+                                    buy: 1,
+                                    personRec: 0,
+                                };
+                               // console.log(JSON.stringify(row.sno?row:b));
+                                handleData(a,row.sno?row:b,this.upBookFunction);
+                                //刷新
+                                //location.reload();
+                            }).catch(() => {
+                                this.$message({
+                                    type: 'info',
+                                    message: '已取消操作'
+                                });
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                },
+
+                //课程信息多选操作
+                changeMore(action){
+                    let arr = this.multipleSelection;
+                    let a = (action == 'select')?true:false;
+                    // console.log(a);
+                    if(arr.length !== 0) {
+                        let n = 0;
+                        this.$confirm(a?'确认选中已勾选课程,是否继续?':'确认收藏已勾选课程,是否继续?', '提示', {
+                            cancelButtonText: '取消',
+                            confirmButtonText: '确定',
+                            type: 'warning'
+                        }).then(() => {
+                            arr.forEach(arr => {
+                                let isup = JSON.stringify(arr.classUp) == '{}' ? false : true; //判断是更新还是添加
+                                let ad = {
+                                    classCode: arr.classCode,
+                                    term: termYear.term,
+                                    classCollect: 0,
+                                    classSelect: 0,
+                                    personScore: 0,
+                                    sno: no,
+                                };
+                                arr.classUp = isup ? arr.classUp : ad;
+                                if(a) {
+                                    //选课
+                                    // console.log(arr);
+
+                                    if(arr.classType == '专业必修课' || arr.classType == '通识必修课'){
+                                        if(n == 0) //防止重复弹出多次提示
+                                            this.$alert('选中的项有必修课，不能被选择', '提示', {
+                                                confirmButtonText: '确定',
+                                                type: 'warning',
+                                            });
+                                        n++;
+                                    } else if(arr.classUp.classSelect == 1){
+                                        if(n == 0) //防止重复弹出多次提示
+                                            this.$alert('选中的项已有被选课程', '提示', {
+                                                confirmButtonText: '确定',
+                                                type: 'warning',
+                                            });
+                                        n++;
+                                    }else{
+                                        arr.classUp.classSelect = 1;
+                                        this.handleUp(arr);
+                                        handleData(isup?"/up_classUpdate":"/add_classUpdate",arr.classUp,this.classSelectFunction);
+                                    }
+                                }else{//收藏
+                                    // console.log(arr.classUp);
+                                    arr.classUp.classCollect = 1;
+                                    handleData(isup?"/up_classUpdate":"/add_classUpdate",arr.classUp,this.classSelectFunction);
+                                }
+                            });
+                            this.getStatus();
+                        }).catch(() => {
+                            alertMessage(this,'操作','3');
+                        });
+                    }
+                    else {
+                        //alert("当前无勾选项");
+                        this.$alert('当前无勾选项', '提示', {
+                            confirmButtonText: '确定',
+                        });
+                    }
+                },
+                //编辑选课收藏状态
+                changeSelected(action,row,status){
+                    // console.log(row);
+                    let isup = JSON.stringify(row.classUp)=='{}'?false:true; //判断是更新还是添加
+                    let ad = {
+                        classCode: row.classCode,
+                        term: termYear.term,
+                        classCollect: 0,
+                        classSelect: 0,
+                        personScore: 0,
+                        sno: no,
+                    };
+                    row.classUp = isup?row.classUp:ad;
+                    // console.log('aaaa'+JSON.stringify(row));
+                    switch(action){
+                        case 'select':
+                            row.classUp.classSelect = row.classUp.classSelect?0:1;  //更新选课
+                            this.handleUp(row);
+                            break;
+                        case 'collect':
+                            row.classUp.classCollect = row.classUp.classCollect?0:1;
+                            break;
+                        default:
+                            break;
+                    }
+                    handleData(isup?"/up_classUpdate":"/add_classUpdate",row.classUp,this.classSelectFunction);
+
+                },
+
+                //处理勾选项
+                handleSelectionChange(val) {
+                    this.multipleSelection = val;
+                },
+
+                /***
+                 *课表相关
+                 */
+                // 改变学期
+                changeTerm(arr){
+                    handleData("/get_classTable",{Sno: no,term: arr[1]},this.classTableFunction);  //课程信息
+                },
+
+                /***
+                 *
+                 * 通用方法
+                 */
+
+                //修改当前选项卡
+                changTab(a){
+                    this.tabIndex = a;
+                },
+                //表头筛选
+                filterHandler(value, row, column){  //筛选选项的value，一行row对象,column一列的属性值
+                    const property = column['property'];
+
+                    // console.log('aaaa'+JSON.stringify(value));
+                    if(property.indexOf('.')!=-1){
+                        let a = property.split('.');
+                        return row[a[0]][a[1]] === value;
+                    } else if(Array.isArray(row[property])){
+                        var  arr = false;
+                        //校区
+                        for(var i in row[property]){
+                            arr = (row[property][i].campus === value)||arr;
+                        }
+                        return arr;
+                    }else{
+                        return row[property] === value;
+                    }
+                },
+                handleTimePosition(result){
+                    if(result){
+                        for(var i in result){
+                            result[i].classUp = result[i].classUp?(result[i].classUp.length?result[i].classUp[0]:{}):{};
+                            result[i].developDirection = result[i].developDirection.split(',');
+                            result[i].classTimePosition = [];
+                            if(result[i].ctpN.length){
+                                result[i].classTimePosition.push({
+                                    campus: 'new',
+                                    timePosition: result[i].ctpN,
+                                })
+                            }
+                            if(result[i].ctpO.length){
+                                result[i].classTimePosition.push({
+                                    campus: 'old',
+                                    timePosition: result[i].ctpO,
+                                })
+                            }
+                        }
+                    }
+
+                    return result;
+                },
+                //更新相关操作
+                handleUp(row){
+                    //更新已选人数
+                    row.selected =  row.selected + (row.classUp.classSelect?1:-1);
+                    row.unselected =  row.unselected + (row.classUp.classSelect?-1:1);
+                    // console.log(row);   //直接传row会报错
+                    let r ={
+                        classCode: row.classCode,
+                        selected: row.selected,
+                        unselected: row.unselected,
+                    };
+                    handleData("/up_classMsg",r,this.upClassMsgFunction);
+
+                    //更新课程表
+                    let t = {
+                        Sno: no,
+                        classTime:'',
+                        term: termYear.term,
+                        monD: 0,
+                        tuesD: 0,
+                        wedD: 0,
+                        thursD: 0,
+                        friD: 0,
+                        satD: 0,
+                        sunD: 0,
+                    };
+                    for(let i=0;i<row.classTimePosition.length;i++){
+                        for(let j=0;j<row.classTimePosition[i].timePosition.length;j++ ){
+                            var newObj = Object.assign({}, t);
+                            for(let k in newObj){
+                                if(row.classTimePosition[i].timePosition[j].weekD==k){
+                                    newObj[k] = row.classTimePosition[i].timePosition[j].classCode;
+                                    newObj.classTime = row.classTimePosition[i].timePosition[j].time;
+                                }
+                            }
+                            handleData("/up_classTable",newObj,this.upClassTableFunction);
+                        }
+                    }
+                },
+
+                /***
+                 *
+                 * ajax返回方法
+                 */
+                //个人信息
+                upMsgFunction(result){
+                    alertMessage(this,'更新',result?'1':'4');
+                    if(result&&this.rtn){
+                        this.$alert('请重新登录', '提示', {
+                            confirmButtonText: '确定',
+                            type: 'warning',
+                        }).then(() => {
+                            window.location.href = './login'
+                        });
+                    }
+                },
+                msgFunction(result){
+                    this.personalForm = result[0];
+                    // console.log(JSON.stringify(result[0]));
+                },
+                //职业规划和书籍
+                jobFunction (result) {
+                    // console.log(result);
+                    if (result) {
+                        for(let i=0;i<result.length;i++){
+                            if((result[i].type=='网络科技'&&this.personalForm.institute=='计算机学院')
+                                ||(result[i].type=='文职'&&this.personalForm.institute=='文学院')
+                            ){
+                                result[i].isRec = true;
+                            }else{
+                                result[i].isRec = false;
+                            }
+                            result[i].recLesson = result[i].recLesson.split(',');
+                            result[i].recBook = result[i].recBook.split(',');
+                        }
+                        // console.log(result)
+                        this.jobDep = result;
+                    }
+                },
+                upBookFunction(result){
+                    // console.log(result);
+                    alertMessage(this,'更新',result?'1':'4');
+                    this.getStatus();
+                },
+                bookFunction (result) {
+                    // console.log(JSON.stringify(result));//打印服务端返回的数据(调试用)
+                    if (result) {
+                        for(var i in result){
+                            result[i].author = result[i].author.split(',');
+                        }
+                        this.classBook = result;
+                    }
+                },
+                //选课信息
+                classFunction(result){
+                    for(let i=0;i<result.length;i++){
+                        if(this.personalForm.institute == result[i].classInstitute){
+                            result[i].isInstituteRc = true;
+                        }else{
+                            result[i].isInstituteRc = false;
+                        }
+                    }
+                    this.classSelectData = this.handleTimePosition(result);
+                    // console.log(result);
+                    // this.classSelectData = result;
+                },
+                classSelectFunction(result){
+                    // console.log("sssssssssss"+JSON.stringify(result));
+                    alertMessage(this,'更新',result?'1':'4');
+                    this.getStatus();
+                },
+                upClassMsgFunction(result){
+                    console.log(result);
+                },
+
+                //课表信息
+                classTableFunction(result){
+                    this.classTableData = result;
+                    if(result.length){
+                        for(let i = 0;i<result.length;i++){
+                            // this.$set(this.classTableData, i, result[i]);
+                            this.classTableData[i].monDM = this.handleTimePosition(result[i].monDM);
+                            this.classTableData[i].tuesDM = this.handleTimePosition(result[i].tuesDM);
+                            this.classTableData[i].wedDM = this.handleTimePosition(result[i].wedDM);
+                            this.classTableData[i].thursDM = this.handleTimePosition(result[i].thursDM);
+                            this.classTableData[i].friDM = this.handleTimePosition(result[i].friDM);
+                            this.classTableData[i].satDM = this.handleTimePosition(result[i].satDM);
+                            this.classTableData[i].sunDM = this.handleTimePosition(result[i].sunDM);
+                            // console.log(this.classTableData[i].tuesDM);
+                        }
+                    }
+
+                    // console.log(this.classTableData);
+                },
+                upClassTableFunction(result){
+                    // console.log("uuuuu"+result);
+                    this.getStatus();
+                },
+                //获取所有数据
+                getStatus(){
+                    // console.log({Sno: no,term: termYear.term});
+                    let msg =  JSON.parse(sessionStorage.getItem('userMessage'));
+                    handleData("/handle_book",{ Sno: no},this.bookFunction);
+                    handleData("/get_msg",msg,this.msgFunction); //个人信息
+                    handleData("/get_class",{Sno: no},this.classFunction);  //课程信息
+                    handleData("/get_classTable",{Sno: no,term: termYear.term},this.classTableFunction);  //课表信息
+                    handleData("/handle_job",{},this.jobFunction);
+                },
+
+            },
+            //模板被渲染前或模板编译进路由前调用
+            //在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图
+            created: function(){
+                this.getStatus();
+            },
+            //已完成模板已经渲染或el对应html渲染后
+            //在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作。
+            mounted:function(){
+                document.getElementById('app').style.display = 'block';
+                document.getElementById('appLoading').style.display = 'none';
+                $('body').css('background','skyblue');
+            },
+        })
+
+    </script>
+</body>
+</html>

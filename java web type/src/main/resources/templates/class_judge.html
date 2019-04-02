@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/el-js/function.js"></script>
+    <script type="text/javascript">const no = checkLog();const termYear = getTerm(no);</script>
+
+    <meta charset="UTF-8">
+    <title>课程评价</title>
+    <link rel="stylesheet" href="/el-css/style.css">
+    <link rel="stylesheet" href="/el-lib/quote/index.css">
+    <script src="/el-lib/quote/vue.min.js"></script>
+    <script src="/el-lib/quote/vue-resource.min.js"></script>
+    <script src="/el-lib/quote/index.js"></script>
+    <script src="/el-lib/jquery/jquery-2.0.0.min.js"></script>
+
+    <style type="text/css">
+        #app{
+            padding: 20px 35px;
+        }
+        /*header*/
+        .book{
+            float: left;
+            height: 150px;
+            width: 120px;
+            background-color: #f5f7fa;
+            margin-right: 20px;
+        }
+        h2{
+            float: left;
+            line-height: 150px;
+        }
+        .right{
+            float: right;
+        }
+        .left{
+            float: left;
+        }
+        .e-tag{
+            width: 50%;
+            line-height: 54px;
+        }
+        /*.el-tag + .el-tag{}第一个el-tag后的el-tag都距离左边10px,避免第一个*/
+
+        .button-new-tag {
+            /*margin-left: 10px;*/
+            height: 32px;
+            padding-top: 10px;
+            /*margin-left: 10px;*/
+            vertical-align: bottom;
+        }
+        .input-new-tag {
+            width: 90px;
+            padding-top: 10px;
+            /*margin-left: 10px;*/
+            vertical-align: bottom;
+        }
+        .item {
+            margin-top: 10px;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="appLoading" style="display: block">
+        <img src="/images/refresh/refresh-bear.gif" alt="">
+    </div>
+    <div id="app">
+        <el-card>
+            <div direction="vertical">
+                <!--header-->
+                <el-container class="header" direction="horizontal" style="height: auto;">
+                    <div style="width: 70%">
+                        <div class="book"></div>
+                        <h2>{{classJudge.className}}</h2>
+                    </div>
+                    <div style="width: 30%;padding: 80px 0;">
+                        <el-rate
+                                v-model="classJudge.score"
+                                class="right"
+                                disabled
+                                show-score
+                                text-color="#ff9900"
+                                score-template="{value}">
+                        </el-rate>
+                    </div>
+                </el-container>
+                <el-container direction="horizontal" >
+                    <div class="e-tag">任课教师：{{classJudge.classTeacher}}</div>
+                    <div class="e-tag" >
+                        <div class="right">
+                            <el-tag
+                                    v-for="(it1,ind1) in classTag"
+                                    v-if="ind1<3"
+                                    style="margin-right: 5px;"
+                                    :title="it1.text"
+                            >
+                                {{it1.text}}
+                            </el-tag>
+                        </div>
+                    </div>
+                </el-container>
+
+                <el-container direction="horizontal" >
+                    <div class="e-tag">开课学院：{{classJudge.classInstitute}}</div>
+                    <div class="e-tag">
+                        <div class="right">
+                            <el-tag
+                                    v-for="(it2,ind2) in classJudge.developDirection"
+                                    v-if="ind2<8"
+                                    style="margin-right: 5px;"
+                                    :title="it2"
+                            >
+                                {{it2}}
+                            </el-tag>
+                        </div>
+
+                    </div>
+                </el-container>
+                <!--content-->
+                <div class="content">
+                    <div style="height: 30px">
+                        <div class="left" style="line-height: 30px">课程介绍:</div>
+
+                        <div class="right" style="width: 210px;line-height: 30px">
+                            <div class="left" style="width: 70px;">推荐指数</div>
+                            <el-rate
+                                    v-model="classUp.personScore"
+                                    class="right"
+                                    style="padding: 3px 0;width:140px"
+                                    show-score
+                                    allow-half
+                                    text-color="#ff9900"
+                                    :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                                    @change="changeRate"
+                                    score-template="{value}">
+                            </el-rate>
+                        </div>
+                    </div>
+                    <div>{{classJudge.classIntroduction}}</div>
+                </div>
+                <!--tag-->
+                <div>
+                    <el-badge
+                            v-for="(tag,ind) in classTag"
+                            class="item"
+                            :value="tag.agree"
+                            :title=tag.isAgree?"点击取消":"点击赞成"
+                            :type="tag.agree<10?'info':(tag.agree<50?'warning':'error')">
+                        <el-button
+                                :type= tag.isAgree?"warning":"primary"
+                                plain
+                                size="small"
+                                :key="tag"
+                                @click="agreeTag(tag)"
+                        >
+                            {{tag.text}}
+                        </el-button>
+                    </el-badge>
+                    <el-input
+                            class="input-new-tag"
+                            v-if="inputVisible"
+                            v-model="inputValue"
+                            ref="saveTagInput"
+                            size="small"
+                            @keyup.enter.native="handleInputConfirm"
+                            @blur="handleInputConfirm"
+                    >
+                    </el-input>
+                    <el-button v-else class="button-new-tag" size="small" @click="showInput" style="margin-top: 10px">+ 添加新标签</el-button>
+                </div>
+            </div>
+        </el-card>
+    </div>
+
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            classCode:'',
+            classJudge:{
+                classCode:'1',
+                className:'计算机操作系统',
+                classTeacher:'1',
+                classInstitute:'计算机学院',
+                classIntroduction:'..........................',
+                score:'3.4',
+                developDirection:['java工程师','算法工程师'],
+            },
+            classTag:[
+                {
+                    text: '拖堂',
+                    agree: 2,
+                    isAgree:1,
+                },
+                {
+                    text: '难度较高',
+                    agree: 21,
+                    isAgree:0,
+                },
+                {
+                    text: '考试简单',
+                    agree: 25,
+                    isAgree:1,
+                },
+                {
+                    text: '有趣',
+                    agree: 78,
+                    isAgree:0,
+                },
+            ],
+            inputVisible: false,
+            inputValue: '',
+            addAgree: true,
+            // tagIndex: [],//判断对应的tag有没有点击赞成,1为已赞成
+            isClassUp: false,   //true为更新，false为添加
+            classUp:{}, //需要更新的数据
+        },
+        methods:{
+            changeRate(r){
+                // console.log(this.classUp);
+                handleData(this.isClassUp?"/up_classUpdate":"/add_classUpdate",this.classUp,this.classRateFunction);
+                handleData("/up_classMsgScore",{classCode: this.classCode},this.classMsgScore);
+
+            },
+            agreeTag(tag){
+                // console.log(ind);//从0开始
+                if(!tag.isAgree){
+                    // this.classJudge.classTag[ind].agree = parseInt(tag.agree) + 1;
+                    let a = {
+                        Sno: no,
+                        classCode: this.classCode,
+                        agreeId: tag.id,
+                    };
+                    tag.agree = parseInt(tag.agree) + 1;
+                    handleData("/up_classTag",tag,this.upTagFunction);
+                    handleData("/add_classAgreeTag",a,this.upTagFunction);
+                }else{
+                    if(tag.agree == 1 && tag.isAgree == 1){
+                        this.$confirm('取消赞成后该标签赞成为0，此操作将删除该标签, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            // this.classTag.splice(ind,1);
+                            handleData("/del_classTag",{id:tag.id},this.upTagFunction);
+                            alertMessage(this,'删除','1');
+                        }).catch(() => {
+                            alertMessage(this,'删除','3');
+                        });
+                    }else{
+                        // this.classJudge.classTag[ind].agree = parseInt(tag.agree) - 1;
+                        tag.agree = parseInt(tag.agree) - 1;
+                        handleData("/up_classTag",tag,this.upTagFunction);
+                        handleData("/del_agreeTag",{id:tag.id},this.upTagFunction);
+                    }
+                }
+
+                // console.log("aaaa"+this.classJudge.classTag[ind].agree);
+            },
+            //将按钮转换为输入框
+            showInput() {
+                this.inputVisible = true;
+                this.$nextTick(_ => {
+                    //不加.$refs.input也可以
+                    this.$refs.saveTagInput.$refs.input.focus();
+                });
+            },
+            //动态增加标签
+            handleInputConfirm() {
+                let inputValue = this.inputValue;
+                let reg = /^[\u4e00-\u9fa5]{1,10}$/;
+                if (inputValue){
+                    if(reg.test(inputValue)){
+                        this.$confirm('确定添加该标签吗?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            let a = {
+                                classCode: this.classCode,
+                                text:inputValue,
+                                agree: 1,
+                            };
+                            handleData("/add_classTag",a,this.addTagFunction);
+                        }).catch(() => {
+                            alertMessage(this,'添加','3');
+                        });
+
+                    }else{
+                        this.$message({
+                            type: 'error',
+                            message: '请输入1-10个汉字!'
+                        });
+                    }
+                }
+                this.inputVisible = false;
+                this.inputValue = '';
+                //console.log(this.classJudge.classTag.length);
+                // this.tagIndex[this.classTag.length-1] = 1;
+            },
+            ///获取跳转后url传递的值
+            GetRequest() {
+                var url = location.search; //获取url中"?"符后的字串
+                //console.log(url)
+                var theRequest = new Object();
+                if (url.indexOf("?") != -1) {  //返回某个指定的字符串值在字符串中首次出现的位置。
+                    var str = url.substr(1);  //stringObject.substr(start,length)抽取从 start 下标开始的指定数目的字符
+                    strs = str.split("&");  //从&分开成多个字符串组成strs数组
+                    for(var i = 0; i < strs.length; i ++) {
+                        //unescape() 函数可对通过 escape() 编码的字符串进行解码。
+                        //中文乱码解决：浏览器会将url中的中文参数进行encodeURI编码，所以要通过js使用decodeURI进行解码
+                        // strs[i].split("=") 为"AcvId=8"分开的"AcvId"和"8"
+                        theRequest[strs[i].split("=")[0]]=decodeURI(strs[i].split("=")[1]);
+                    }
+                }
+                this.classCode = theRequest.classCode;
+                // console.log(theRequest);
+                //return theRequest;
+            },
+            /**
+             * ajax返回方法
+             * @param result
+             */
+
+            /*获取数据方法*/
+            classFunction(result){
+                // console.log(JSON.stringify(result[0]));
+                this.classJudge = result[0];
+                // this.classJudge.personScore = 0;
+                this.classJudge.developDirection = this.classJudge.developDirection.split(',');
+            },
+            classTagFunction(result){
+                this.classTag = result;
+                // console.log(JSON.stringify(this.classTag));
+            },
+            classUpdateFunction(result){
+                if(result.length){
+                    this.classUp = result[0];
+                    this.isClassUp = true;
+                }else{
+                    this.classUp = {
+                        Sno: no,
+                        term: termYear.term,
+                        classCode: this.classCode,
+                        classSelect: 0,
+                        classCollect: 0,
+                        personScore: 0,
+                    };
+                    this.isClassUp = false;
+                }
+            },
+            /*操作方法*/
+            addTagFunction(result){
+                // console.log(result);
+                if(result){
+                    this.getStatus();
+                    let b = {
+                        Sno: no,
+                        classCode: this.classCode,
+                        agreeId: result,
+                    };
+                    handleData("/add_classAgreeTag",b,this.addAgreeTagFunction);
+                }
+            },
+            addAgreeTagFunction(result){
+                // console.log(result);
+                if(result) {
+                    this.getStatus();
+                }
+                alertMessage(this,'添加',result?'1':'4');
+            },
+            upTagFunction(result){
+                // console.log(result);
+                if(result) {
+                    this.getStatus();
+                }
+            },
+            //改变评分
+            classRateFunction(result){
+                // console.log(result);
+                if(result){
+                    this.getStatus();
+                }
+                alertMessage(this,'评分',result?'1':'4');
+            },
+            classMsgScore(result){
+                // console.log(result);
+            },
+            //获取对应数据
+            getStatus(){
+                let a = {
+                    Sno: no,
+                    classCode: this.classCode,
+                };
+                handleData("/get_o_class",a,this.classFunction);
+                handleData("/get_tag",a,this.classTagFunction);
+                handleData("/get_classUpdate",a,this.classUpdateFunction);
+            }
+        },
+        //模板被渲染前或模板编译进路由前调用
+        //在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图
+        created: function(){
+            this.GetRequest();
+            this.getStatus(this.classCode);
+        },
+        //已完成模板已经渲染或el对应html渲染后
+        //在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作。
+        mounted: function(){
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('appLoading').style.display = 'none';
+        }
+
+        });
+</script>
+
+</body>
+</html>

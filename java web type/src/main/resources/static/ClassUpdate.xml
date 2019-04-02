@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.ClassUpdateMapper">
+    <!--3.容器配置-->
+    <resultMap id="ClassUpdateResultMap" type="com.jkb.entity.ClassUpdate">
+        <id column="Sno" property="Sno"/>
+        <result column="term" property="term"/>
+        <result column="classCode" property="classCode"/>
+        <result column="classSelect" property="classSelect"/>
+        <result column="classCollect" property="classCollect"/>
+        <result column="personScore" property="personScore"/>
+    </resultMap>
+
+    <select id="getAllClassUpdate" resultMap="ClassUpdateResultMap">
+        select * from ClassUpdate where Sno=#{Sno} and classCode=#{classCode}
+    </select>
+    <update id="updateClassUpdate" parameterType="com.jkb.entity.ClassUpdate">
+        update ClassUpdate
+        set term=#{term},classSelect=#{classSelect},classCollect=#{classCollect},personScore=#{personScore}
+        where Sno=#{sno} and classCode=#{classCode}
+    </update>
+    <insert id="insertClassUpdate" parameterType="com.jkb.entity.ClassUpdate">
+        INSERT INTO ClassUpdate(Sno,term,classCode,classSelect,classCollect,personScore) VALUES (#{Sno},#{term},#{classCode},#{classSelect},#{classCollect},#{personScore})
+    </insert>
+    <!-- <delete id="deleteBooked" parameterType="long">
+       delete from Booked where where Sno=#{sno} and code=#{code}
+     </delete>-->
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.StudentsMapper">
+<!--3.容器配置-->
+    <resultMap id="StudentsResultMap" type="com.jkb.entity.Students">
+        <id column="Sno" property="Sno"/>
+        <result column="Sname" property="Sname"/>
+        <result column="password" property="password"/>
+        <result column="Ssex" property="Ssex"/>
+        <result column="Sbirth" property="Sbirth"/>
+        <result column="Sdept" property="Sdept"/>
+        <result column="institute" property="institute"/>
+        <result column="Sclass" property="Sclass"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+    </resultMap>
+
+    <select id="getAllStudents" resultMap="StudentsResultMap">
+        select * from Students where Sno = #{Sno} and password=#{password}
+    </select>
+    <update id="updateStudents" parameterType="com.jkb.entity.Students">
+        update Students
+        set password = #{password},phone = #{phone},email = #{email}
+        where Sno = #{sno}
+    </update>
+</mapper>

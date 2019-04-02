@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jkb.mapper.ClassTagMapper">
+    <!--3.容器配置-->
+    <resultMap id="ClassTagResultMap" type="com.jkb.entity.ClassTag">
+        <id column="id" property="id"/>
+        <result column="classCode" property="classCode"/>
+        <result column="text" property="text"/>
+        <result column="agree" property="agree"/>
+        <result column="isAgree" property="isAgree"/>
+    </resultMap>
+
+    <select id="getAllClassTag" resultMap="ClassTagResultMap">
+        select * from ClassTag where classCode=#{classCode} ORDER BY agree Desc
+    </select>
+    <update id="updateClassTag" parameterType="com.jkb.entity.ClassTag">
+        update ClassTag set agree=#{agree}
+        where classCode=#{classCode} and id=#{id}
+    </update>
+    <insert id="insertClassTag" parameterType="map">
+        INSERT INTO ClassTag(classCode,text,agree) VALUES (#{classCode},#{text},#{agree})
+        <selectKey resultType="java.lang.Integer" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+    </insert>
+    <delete id="deleteClassTag" parameterType="Integer">
+    delete from ClassTag where id=#{id}
+    </delete>
+</mapper>
