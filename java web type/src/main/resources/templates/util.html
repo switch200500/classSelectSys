@@ -113,6 +113,12 @@
             -webkit-box-orient:vertical;
             -webkit-line-clamp:2;
         }
+        .el-table__body tr:hover>td{
+            background-color: #FFF !important;
+        }
+        #classTable .el-table__body tr .ch:hover{
+            background-color: #f5f7fa !important;
+        }
     </style>
 
 </head>
@@ -320,12 +326,14 @@
                         ></el-cascader>
 
                         <el-table
+                                id="classTable"
+                                cell-class-name="ch"
                                 :data="classTableData"
                                 style="width: 100%">
+
                             <el-table-column
                                     label="上课时间"
                                     align="center"
-                                    fixed
                                     prop="classTime">
                                 <template slot-scope="scope">
                                     <h3>{{sTime[scope.row.classTime]}}</h3>
