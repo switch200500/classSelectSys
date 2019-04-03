@@ -119,6 +119,11 @@
         #classTable .el-table__body tr .ch:hover{
             background-color: #f5f7fa !important;
         }
+        /*分页*/
+        .el-tab-pane .el-pagination{
+            padding: 8px 5px;
+            float: right;
+        }
     </style>
 
 </head>
@@ -625,10 +630,13 @@
                     <el-tab-pane name="4">
                         <span slot="label"><i class="el-icon-goods"></i> 书籍采购</span>
 
-                        <el-table
-                                :data="classBook.filter(data => !bookSearch
+                        <!--
+                         :data="classBook.filter(data => !bookSearch
                                     || data.name.toLowerCase().includes(bookSearch.toLowerCase())
                                 )"
+                        -->
+                        <el-table
+                                :data="tables.slice((pageIndex-1)*pageSize,pageIndex*pageSize)"
                                 style="width: 100%">
                             <el-table-column type="expand">
                                 <template slot-scope="props">
@@ -717,6 +725,7 @@
                             <el-table-column
                                     align="center"
                                     prop="buy"
+                                    filter-value="tables"
                                     :filters="buyBook"
                                     :filter-method="filterHandler"
                                     filter-placement="bottom-end"
@@ -743,12 +752,17 @@
                                 </template>
                             </el-table-column>
                         </el-table>
+
                         <el-pagination
-                                class="right"
-                                layout="prev, pager, next,->"
-                                page-size="2"
-                                :total="classBook.length">
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="pageIndex"
+                                :page-sizes="[2, 3, 4, 5]"
+                                :page-size="pageSize"
+                                layout="total, sizes, prev, pager, next, jumper,->"
+                                :total="total">
                         </el-pagination>
+
 
                     </el-tab-pane>
 
@@ -938,6 +952,8 @@
                     }
                 };
                 return {
+                    pageSize: 2, // 每页大小默认值
+                    pageIndex: 1, // 默认第一页
                     // loading: true,
                     lunboSrc:{
                         '1':'http://www.swun.edu.cn/#',
@@ -1335,6 +1351,13 @@
                 'weekday':weekday,
             },
             methods:{
+                /*分页*/
+                handleSizeChange (val) {
+                    this.pageSize = val
+                },
+                handleCurrentChange (val) {
+                    this.pageIndex = val
+                },
                 /***
                  *个人信息相关
                  */
@@ -1588,7 +1611,6 @@
                 //表头筛选
                 filterHandler(value, row, column){  //筛选选项的value，一行row对象,column一列的属性值
                     const property = column['property'];
-
                     // console.log('aaaa'+JSON.stringify(value));
                     if(property.indexOf('.')!=-1){
                         let a = property.split('.');
@@ -1794,6 +1816,59 @@
                 document.getElementById('appLoading').style.display = 'none';
                 $('body').css('background','skyblue');
             },
+            computed: {
+                // 前端过滤
+                tables: function(value){
+                    /*return function(a,b){
+                        // console.log('search'+a,'table'+JSON.stringify(b));
+                        const search = this.bookSearch;
+                        if (search) {
+                            return this.classBook.filter(dataNews => {
+                                return Object.keys(dataNews).some(key => {
+                                    return String(dataNews[key]).toLowerCase().indexOf(search) > -1
+                                })
+                            })
+                        }
+                        return this.classBook
+                    };*/
+                    // console.log(value);
+                    let search='',tableData=[];
+                    switch(this.tabIndex){
+                        case '3':   //课程信息
+                            search = this.classSearch;
+                            tableData = this.classSelectData;
+                            break;
+                        case '4':   //书籍采购
+                            search = this.bookSearch;
+                            tableData = this.classBook;
+                            break;
+                        case '5':   //职业规划
+                            search = this.jobSearch;
+                            tableData = this.jobDep;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (search) {
+                        return tableData.filter(dataNews => {
+                            return Object.keys(dataNews).some(key => {
+                                return String(dataNews[key]).toLowerCase().indexOf(search) > -1
+                            })
+                        })
+                    }
+                    return tableData
+                },
+                // 总条数
+                total () {
+                    return this.tables.length
+                },
+            },
+            watch: {
+                // 检测表格数据过滤变化，自动跳到第一页
+                tables () {
+                    this.pageIndex = 1
+                }
+            }
         })
 
     </script>

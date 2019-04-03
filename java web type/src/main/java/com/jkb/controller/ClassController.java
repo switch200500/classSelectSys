@@ -62,7 +62,6 @@ public class ClassController {
 
     @RequestMapping(value = "/get_o_class")
     public List classOMsg(long classCode) {
-        classCode= 1L;
         List<ClassMsg> classMsg = classMsgService.getClassMsg(classCode);
 //        System.out.println(classMsg);
         return classMsg;
