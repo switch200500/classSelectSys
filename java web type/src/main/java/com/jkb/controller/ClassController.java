@@ -103,32 +103,33 @@ public class ClassController {
     public List classTable(long Sno,Integer term) {
         List<ClassTable> classTable = classTableService.getAllClassTable(Sno,term);
         for(ClassTable classTable1 : classTable) {
-            if(classTable1.getMonD() != 0){
+//            System.out.println(classTable1);
+            if(classTable1.getMonD() != 0 && classTable1.getMonD() != -1){
                 List classMsg1 = this.setClassTable(classTable1.getMonD());
                 classTable1.setMonDM(classMsg1);
             }
-            if(classTable1.getTuesD() != 0){
+            if(classTable1.getTuesD() != 0 && classTable1.getTuesD() != -1){
                 List classMsg2 = this.setClassTable(classTable1.getTuesD());
 //                System.out.println(classMsg2);
                 classTable1.setTuesDM(classMsg2);
             }
-            if(classTable1.getWedD() != 0){
+            if(classTable1.getWedD() != 0 && classTable1.getWedD() != -1){
                 List classMsg3 = this.setClassTable(classTable1.getWedD());
                 classTable1.setWedDM(classMsg3);
             }
-            if(classTable1.getThursD() != 0){
+            if(classTable1.getThursD() != 0 && classTable1.getThursD() != -1){
                 List classMsg4 = this.setClassTable(classTable1.getThursD());
                 classTable1.setThursDM(classMsg4);
             }
-            if(classTable1.getFriD() != 0){
+            if(classTable1.getFriD() != 0 && classTable1.getFriD() != -1){
                 List classMsg5 = this.setClassTable(classTable1.getFriD());
                 classTable1.setFriDM(classMsg5);
             }
-            if(classTable1.getSatD() != 0){
+            if(classTable1.getSatD() != 0 && classTable1.getSatD() != -1){
                 List classMsg6 = this.setClassTable(classTable1.getSatD());
                 classTable1.setSatDM(classMsg6);
             }
-            if(classTable1.getSunD() != 0){
+            if(classTable1.getSunD() != 0 && classTable1.getSunD() != -1){
                 List classMsg7 = this.setClassTable(classTable1.getSunD());
                 classTable1.setSunDM(classMsg7);
             }

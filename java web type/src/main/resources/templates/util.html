@@ -350,7 +350,7 @@
                                     label="星期一"
                                     prop="monD">
                                 <template slot-scope="scope">
-                                    <weekday v-if="scope.row.monD" :msg="scope.row.monDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.monD && scope.row.monD!=-1" :msg="scope.row.monDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
 
@@ -358,14 +358,14 @@
                                     label="星期二"
                                     prop="tuesD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.tuesD" :msg="scope.row.tuesDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.tuesD && scope.row.tuesD!=-1" :msg="scope.row.tuesDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
                             <el-table-column
                                     label="星期三"
                                     prop="wedD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.wedD" :msg="scope.row.wedDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.wedD && scope.row.wedD!=-1" :msg="scope.row.wedDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
 
@@ -373,28 +373,28 @@
                                     label="星期四"
                                     prop="thursD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.thursD" :msg="scope.row.thursDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.thursD && scope.row.thursD!=-1" :msg="scope.row.thursDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
                             <el-table-column
                                     label="星期五"
                                     prop="friD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.friD" :msg="scope.row.friDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.friD && scope.row.friD!=-1" :msg="scope.row.friDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
                             <el-table-column
                                     label="星期六"
                                     prop="satD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.satD" :msg="scope.row.satDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.satD && scope.row.satD!=-1" :msg="scope.row.satDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
                             <el-table-column
                                     label="星期日"
                                     prop="sunD">
                                 <template  slot-scope="scope">
-                                    <weekday v-if="scope.row.sunD" :msg="scope.row.sunDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
+                                    <weekday v-if="scope.row.sunD && scope.row.sunD!=-1" :msg="scope.row.sunDM[0]" :stime="sTime" @view="view" :wtime="wTime"></weekday>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -637,6 +637,7 @@
                         -->
                         <el-table
                                 :data="tables.slice((pageIndex-1)*pageSize,pageIndex*pageSize)"
+                                @filter-change="filterChange"
                                 style="width: 100%">
                             <el-table-column type="expand">
                                 <template slot-scope="props">
@@ -677,6 +678,12 @@
                                 </template>
                             </el-table-column>
 
+                            <el-table-column
+                                    label="ID"
+                                    prop="code"
+                                    width="80"
+                            >
+                            </el-table-column>
                             <el-table-column
                                     label="名称"
                                     prop="name">
@@ -722,12 +729,15 @@
 
                                 </template>
                             </el-table-column>
+
+                            <!--
+                                 :filter-method="filterHandler"
+                            -->
                             <el-table-column
                                     align="center"
                                     prop="buy"
                                     filter-value="tables"
                                     :filters="buyBook"
-                                    :filter-method="filterHandler"
                                     filter-placement="bottom-end"
                             >
                                 <template slot="header" slot-scope="scope">
@@ -952,6 +962,8 @@
                     }
                 };
                 return {
+                    filterType: '',
+                    filterValue: [],
                     pageSize: 2, // 每页大小默认值
                     pageIndex: 1, // 默认第一页
                     // loading: true,
@@ -1626,6 +1638,13 @@
                         return row[property] === value;
                     }
                 },
+                filterChange(a){
+                    for(var i in a){
+                        this.filterType = i;
+                        this.filterValue = a[i];
+                    }
+                    // console.log(this.filterValue);
+                },
                 handleTimePosition(result){
                     if(result){
                         for(var i in result){
@@ -1680,10 +1699,11 @@
                             var newObj = Object.assign({}, t);
                             for(let k in newObj){
                                 if(row.classTimePosition[i].timePosition[j].weekD==k){
-                                    newObj[k] = row.classTimePosition[i].timePosition[j].classCode;
+                                    newObj[k] = row.classUp.classSelect?row.classTimePosition[i].timePosition[j].classCode:-1;
                                     newObj.classTime = row.classTimePosition[i].timePosition[j].time;
                                 }
                             }
+                            // console.log(newObj);
                             handleData("/up_classTable",newObj,this.upClassTableFunction);
                         }
                     }
@@ -1831,8 +1851,10 @@
                         }
                         return this.classBook
                     };*/
-                    // console.log(value);
                     let search='',tableData=[];
+                    let fv = this.filterValue;
+                    let ft = this.filterType;
+                    // console.log(ft+fv);
                     switch(this.tabIndex){
                         case '3':   //课程信息
                             search = this.classSearch;
@@ -1854,8 +1876,15 @@
                             return Object.keys(dataNews).some(key => {
                                 return String(dataNews[key]).toLowerCase().indexOf(search) > -1
                             })
-                        })
+                        })/*.filter((item) => {
+                            return fv === '' || item[ft] === fv
+                        })*/
                     }
+                   /* if(fv.length != 0){
+                        return tableData.filter((item) => {
+                            return fv === '' || item[ft] === fv
+                        })
+                    }*/
                     return tableData
                 },
                 // 总条数
@@ -1867,7 +1896,7 @@
                 // 检测表格数据过滤变化，自动跳到第一页
                 tables () {
                     this.pageIndex = 1
-                }
+                },
             }
         })
 
