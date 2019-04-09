@@ -736,8 +736,9 @@
                             <el-table-column
                                     align="center"
                                     prop="buy"
-                                    filter-value="tables"
+                                    filter-value="classBook"
                                     :filters="buyBook"
+                                    :filter-method="filterHandler"
                                     filter-placement="bottom-end"
                             >
                                 <template slot="header" slot-scope="scope">
@@ -1582,11 +1583,35 @@
                         sno: no,
                     };
                     row.classUp = isup?row.classUp:ad;
-                    // console.log('aaaa'+JSON.stringify(row));
+                    // console.log(this.classTableData);
+                    // console.log(row);
+                    let n = 0;
                     switch(action){
                         case 'select':
-                            row.classUp.classSelect = row.classUp.classSelect?0:1;  //更新选课
-                            this.handleUp(row);
+                            if(row.classUp.classSelect){ //取消选课
+                                row.classUp.classSelect = 0;
+                                this.handleUp(row);
+                            }else{  //选课
+                                for(let i=0;i<row.classTimePosition.length;i++){
+                                    for(let j=0;j<row.classTimePosition[i].timePosition.length;j++ ){
+                                        let time = row.classTimePosition[i].timePosition[j].time;
+                                        let weekD = row.classTimePosition[i].timePosition[j].weekD;
+                                        // console.log(time);
+                                        // console.log(this.classTableData.slice(time-1,time)[0][weekD]);
+                                        if(this.classTableData.slice(time-1,time)[0][weekD] && n==0){
+                                            alertMessage(this,'该课程时间与课程表已选课程时间冲突，选课','4');
+                                            n++;
+                                        }
+                                    }
+                                }
+                                if(n==0){
+                                    row.classUp.classSelect = 1;
+                                    this.handleUp(row);
+                                }
+                            }
+
+                            /*row.classUp.classSelect = row.classUp.classSelect?0:1;  //更新选课
+                            this.handleUp(row);*/
                             break;
                         case 'collect':
                             row.classUp.classCollect = row.classUp.classCollect?0:1;
@@ -1594,7 +1619,9 @@
                         default:
                             break;
                     }
-                    handleData(isup?"/up_classUpdate":"/add_classUpdate",row.classUp,this.classSelectFunction);
+                    if(n == 0){
+                        handleData(isup?"/up_classUpdate":"/add_classUpdate",row.classUp,this.classSelectFunction);
+                    }
 
                 },
 
@@ -1623,6 +1650,9 @@
                 //表头筛选
                 filterHandler(value, row, column){  //筛选选项的value，一行row对象,column一列的属性值
                     const property = column['property'];
+                    // console.log(column);
+                    this.filterType = property;
+                    this.filterValue = value;
                     // console.log('aaaa'+JSON.stringify(value));
                     if(property.indexOf('.')!=-1){
                         let a = property.split('.');
@@ -1639,10 +1669,10 @@
                     }
                 },
                 filterChange(a){
-                    for(var i in a){
+                   /* for(var i in a){
                         this.filterType = i;
                         this.filterValue = a[i];
-                    }
+                    }*/
                     // console.log(this.filterValue);
                 },
                 handleTimePosition(result){
@@ -1668,7 +1698,7 @@
 
                     return result;
                 },
-                //更新相关操作
+                //更新选课相关操作
                 handleUp(row){
                     //更新已选人数
                     row.selected =  row.selected + (row.classUp.classSelect?1:-1);
@@ -1876,14 +1906,17 @@
                             return Object.keys(dataNews).some(key => {
                                 return String(dataNews[key]).toLowerCase().indexOf(search) > -1
                             })
-                        })/*.filter((item) => {
-                            return fv === '' || item[ft] === fv
-                        })*/
-                    }
-                   /* if(fv.length != 0){
-                        return tableData.filter((item) => {
-                            return fv === '' || item[ft] === fv
                         })
+                    }
+                    /*if(fv && ft){
+                        return tableData.filter(dataNews => {
+                            return String(dataNews[ft]).includes(fv)
+                        } )
+                    }*/
+                   /*  :data="jobDep.filter(data => !jobSearch
+                                    || data.position.toLowerCase().includes(jobSearch.toLowerCase())
+                                    || data.salary.toLowerCase().includes(jobSearch.toLowerCase())
+                                )"
                     }*/
                     return tableData
                 },
