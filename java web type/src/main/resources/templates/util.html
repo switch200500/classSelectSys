@@ -1548,9 +1548,13 @@
                                             });
                                         n++;
                                     }else{
-                                        arr.classUp.classSelect = 1;
-                                        this.handleUp(arr);
-                                        handleData(isup?"/up_classUpdate":"/add_classUpdate",arr.classUp,this.classSelectFunction);
+                                        let nc = 0;
+                                        nc = this.checkClash(arr,nc);
+                                        if(nc == 0){
+                                            arr.classUp.classSelect = 1;
+                                            this.handleUp(arr);
+                                            handleData(isup?"/up_classUpdate":"/add_classUpdate",arr.classUp,this.classSelectFunction);
+                                        }
                                     }
                                 }else{//收藏
                                     // console.log(arr.classUp);
@@ -1569,6 +1573,21 @@
                             confirmButtonText: '确定',
                         });
                     }
+                },
+                checkClash(row,n){
+                    for(let i=0;i<row.classTimePosition.length;i++){
+                        for(let j=0;j<row.classTimePosition[i].timePosition.length;j++ ){
+                            let time = row.classTimePosition[i].timePosition[j].time;
+                            let weekD = row.classTimePosition[i].timePosition[j].weekD;
+                            // console.log(time);
+                            // console.log(this.classTableData.slice(time-1,time)[0][weekD]);
+                            if(this.classTableData.slice(time-1,time)[0][weekD] && n==0){
+                                alertMessage(this,'该课程时间与课程表已选课程时间冲突，选课','4');
+                                n++;
+                            }
+                        }
+                    }
+                    return n;
                 },
                 //编辑选课收藏状态
                 changeSelected(action,row,status){
@@ -1592,18 +1611,7 @@
                                 row.classUp.classSelect = 0;
                                 this.handleUp(row);
                             }else{  //选课
-                                for(let i=0;i<row.classTimePosition.length;i++){
-                                    for(let j=0;j<row.classTimePosition[i].timePosition.length;j++ ){
-                                        let time = row.classTimePosition[i].timePosition[j].time;
-                                        let weekD = row.classTimePosition[i].timePosition[j].weekD;
-                                        // console.log(time);
-                                        // console.log(this.classTableData.slice(time-1,time)[0][weekD]);
-                                        if(this.classTableData.slice(time-1,time)[0][weekD] && n==0){
-                                            alertMessage(this,'该课程时间与课程表已选课程时间冲突，选课','4');
-                                            n++;
-                                        }
-                                    }
-                                }
+                                n = this.checkClash(row,n);
                                 if(n==0){
                                     row.classUp.classSelect = 1;
                                     this.handleUp(row);
