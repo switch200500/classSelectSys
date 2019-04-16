@@ -1,4 +1,4 @@
-# classSelectSys 大学学生选课系统-开发中
+# classSelectSys 大学学生选课系统
 ## 文件java-web-type
 ## 项目结构：javaweb类型（vue项目结构搭建中）
 ## 运用语言框架：
