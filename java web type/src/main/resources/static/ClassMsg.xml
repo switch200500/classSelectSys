@@ -9,6 +9,7 @@
         <result column="className" property="className"/>
         <result column="classInstitute" property="classInstitute"/>
         <result column="classTeacher" property="classTeacher"/>
+        <result column="credit" property="credit"/>
         <result column="selected" property="selected"/>
         <result column="unselected" property="unselected"/>
         <result column="developDirection" property="developDirection"/>

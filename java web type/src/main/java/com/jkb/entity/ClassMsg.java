@@ -16,6 +16,8 @@ public class ClassMsg {
 
     private String classTeacher;
 
+    private Float credit;
+
     private Integer selected;
 
     private Integer unselected;

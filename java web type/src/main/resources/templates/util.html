@@ -312,7 +312,7 @@
 
                         <el-carousel :interval="5000" height="400px">
                             <el-carousel-item v-for="item in 5" :key="item">
-                                <a :href="lunboSrc[item]">
+                                <a :href="lunboSrc[item]" target="_blank">
                                     <img :src="'/images/lunbo/'+item+'.jpg'" alt="" style="width: 100%">
                                 </a>
                             </el-carousel-item>
@@ -442,7 +442,7 @@
                                     label="课程代码"
                                     prop="classCode"
                                     sortable
-                                    width="103"
+                                    width="80"
                             >
                             </el-table-column>
                             <el-table-column
@@ -490,9 +490,15 @@
                             >
                             </el-table-column>
                             <el-table-column
-                                    label="上课老师"
+                                    label="老师"
                                     prop="classTeacher"
-                                    width="80"
+                                    width="70"
+                            >
+                            </el-table-column>
+                            <el-table-column
+                                    label="学分"
+                                    prop="credit"
+                                    width="50"
                             >
                             </el-table-column>
                             <el-table-column
@@ -1659,8 +1665,8 @@
                 filterHandler(value, row, column){  //筛选选项的value，一行row对象,column一列的属性值
                     const property = column['property'];
                     // console.log(column);
-                    this.filterType = property;
-                    this.filterValue = value;
+                  /*  this.filterType = property;
+                    this.filterValue = value;*/
                     // console.log('aaaa'+JSON.stringify(value));
                     if(property.indexOf('.')!=-1){
                         let a = property.split('.');
@@ -1890,8 +1896,8 @@
                         return this.classBook
                     };*/
                     let search='',tableData=[];
-                    let fv = this.filterValue;
-                    let ft = this.filterType;
+                    /*let fv = this.filterValue;
+                    let ft = this.filterType;*/
                     // console.log(ft+fv);
                     switch(this.tabIndex){
                         case '3':   //课程信息
