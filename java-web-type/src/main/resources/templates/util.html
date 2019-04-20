@@ -858,6 +858,15 @@
                                 </template>
                             </el-table-column>-->
                             <el-table-column
+                                    align="center"
+                                    label="职业分类"
+                                    prop="type"
+                                    :filters="jobType"
+                                    :filter-method="filterHandler"
+                                    filter-placement="bottom-start"
+                            >
+                            </el-table-column>
+                            <el-table-column
                                     label="推荐课程"
                                     prop="recLesson">
                                 <template slot-scope="scope">
@@ -1369,7 +1378,7 @@
                     ],
                     //职位
                     jobType:[
-                        {text: '文员', value: '文员'},
+                        {text: '文职', value: '文职'},
                         {text: '网络科技', value: '网络科技'},
                         {text: '管理', value: '管理'},
                         {text: '专业技术', value: '专业技术'},
