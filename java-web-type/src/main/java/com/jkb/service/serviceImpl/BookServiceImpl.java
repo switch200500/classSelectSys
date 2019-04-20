@@ -19,6 +19,12 @@ public class BookServiceImpl  implements BookService{
     }
 
     @Override
+    public List<Book> getBook(long code) {
+        return bookMapper.getBook(code);
+    }
+
+
+    @Override
     public int updateBook(long code) {
         return bookMapper.updateBook(code);
     }
