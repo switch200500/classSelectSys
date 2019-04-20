@@ -21,6 +21,9 @@
     <select id="getAllBook" resultMap="BookResultMap">
         select * from Book
     </select>
+    <select id="getBook" resultMap="BookResultMap">
+        select * from Book where code=#{code}
+    </select>
     <update id="updateBook" parameterType="com.jkb.entity.Book">
         update Book set rec=(select AVG(personRec) from Booked where code=#{code})  where code=#{code}
     </update>

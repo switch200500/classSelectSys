@@ -9,5 +9,6 @@ import java.util.List;
 @Mapper
 public interface BookMapper {
     List<Book> getAllBook();
+    List<Book> getBook(@Param("code")long code);
     int updateBook(@Param("code")long code);
 }
