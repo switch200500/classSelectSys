@@ -14,6 +14,7 @@
         <result column="unselected" property="unselected"/>
         <result column="developDirection" property="developDirection"/>
         <result column="score" property="score"/>
+        <result column="bookCode" property="bookCode"/>
         <result column="classIntroduction" property="classIntroduction"/>
 
         <!--<collection property="classTimePosition" ofType="com.jkb.entity.ClassTimePosition">

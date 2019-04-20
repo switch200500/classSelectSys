@@ -26,6 +26,8 @@ public class ClassMsg {
 
     private Float score;
 
+    private long bookCode;
+
     private String classIntroduction;
 
     private List<ClassTimePosition> ctpN;
@@ -35,5 +37,7 @@ public class ClassMsg {
     private List<ClassTag> tag;
 
     private List<ClassUpdate> classUp;
+
+    private List<Book> classBook;
 
 }

@@ -5,13 +5,9 @@ import com.jkb.entity.ClassUpdate;
 import com.jkb.entity.ClassAgreeTag;
 import com.jkb.entity.ClassTimePosition;
 import com.jkb.entity.ClassTable;
+import com.jkb.entity.Book;
 
-import com.jkb.service.ClassTableService;
-import com.jkb.service.ClassAgreeTagService;
-import com.jkb.service.ClassTimePositionService;
-import com.jkb.service.ClassUpdateService;
-import com.jkb.service.ClassTagService;
-import com.jkb.service.ClassMsgService;
+import com.jkb.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +30,8 @@ public class ClassController {
     ClassTimePositionService classTimePositionService;
     @Autowired
     ClassTableService classTableService;
+    @Autowired
+    BookService bookService;
     /*
     *获取数据
     * */
@@ -45,7 +43,9 @@ public class ClassController {
             List<ClassTimePosition> ctpO = classTimePositionService.getClassTimePosition(classMsg1.getClassCode(),"old");
             List<ClassTag> classTag = classTagService.getAllClassTag(classMsg1.getClassCode());
             List<ClassUpdate> classUpdate = classUpdateService.getAllClassUpdate(Sno,classMsg1.getClassCode());
+            List<Book> classBook = bookService.getBook(classMsg1.getBookCode());
 
+            classMsg1.setClassBook(classBook);
             classMsg1.setCtpN(ctpN);
             classMsg1.setCtpO(ctpO);
             classMsg1.setTag(classTag);

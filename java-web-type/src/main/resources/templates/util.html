@@ -407,7 +407,7 @@
                             <p  class="left" style="color:red;margin-top: -5px;">
                                 上课书籍默认 <span style="font-size: 20px;font-weight: bold;">不选购</span>，需要购书的同学请前往书籍采购处处理,也可前往学校旧书店购买书籍。
                                 请大家爱护资源争取重复利用
-                                <el-button @click="changTab('4')">前往选购书籍</el-button>
+                                <el-button @click="changeTab('4')">前往选购书籍</el-button>
                             </p>
                             <p class="right"  style="margin-top: -5px;">
                                 <el-button @click="changeMore('select')" icon="el-icon-check" circle title="选择已勾选课程"></el-button>
@@ -426,11 +426,30 @@
                         >
                             <el-table-column type="expand">
                                 <template slot-scope="props">
-                                    <el-form label-position="top" inline class="demo-table-expand" >
+                                    <h3>教材介绍：</h3>
+                                    <div style="padding: 0 2%;">
+                                        <el-form label-position="left" inline class="demo-table-expand" v-if="props.row.bookCode">
+                                            <el-form-item label="书籍名称">
+                                                <span @click="view('4',props.row.classBook[0].name)">{{ props.row.classBook[0].name }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="出版社">
+                                                <span>{{ props.row.classBook[0].publish }}</span>
+                                            </el-form-item>
+                                            <el-form-item label="作者">
+                                                <span v-for="au in props.row.classBook[0].author" class="spanDistance">{{au}}</span>
+                                            </el-form-item>
+                                            <el-form-item label="类别">
+                                                <span>{{ props.row.classBook[0].type }}</span>
+                                            </el-form-item>
+                                        </el-form>
+                                    </div>
+                                    <h3>课程介绍：</h3>
+                                    <div>{{props.row.classIntroduction}}</div>
+                                   <!-- <el-form label-position="top" inline class="demo-table-expand" >
                                         <el-form-item label="课程介绍" style="width: 100%;">
                                             {{props.row.classIntroduction}}
                                         </el-form-item>
-                                    </el-form>
+                                    </el-form>-->
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -542,7 +561,7 @@
                                                 class="ellipsis"
                                                 type="text"
                                                 title="点击查更多发展方向"
-                                                @click="changTab('5')"
+                                                @click="changeTab('5')"
                                         >....</el-button>
                                     </template>
                                 </el-table-column>
@@ -1446,7 +1465,7 @@
                 //查看课程详细信息
                 view(index,msg){
                     // console.log(index+msg);
-                    this.changTab(index);
+                    this.changeTab(index);
                     switch(index){
                         case '3':
                             this.classSearch = msg;
@@ -1658,7 +1677,7 @@
                  */
 
                 //修改当前选项卡
-                changTab(a){
+                changeTab(a){
                     this.tabIndex = a;
                 },
                 //表头筛选
@@ -1818,6 +1837,9 @@
                             result[i].isInstituteRc = true;
                         }else{
                             result[i].isInstituteRc = false;
+                        }
+                        if(result[i].bookCode){
+                            result[i].classBook[0].author = result[i].classBook[0].author.split(',');
                         }
                     }
                     this.classSelectData = this.handleTimePosition(result);
