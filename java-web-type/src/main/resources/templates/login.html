@@ -27,7 +27,7 @@
     </div>
     <div id="app">
         <div class="log">
-            <el-form :model="userForm" ref="userForm" label-width="60px" class="demo-ruleForm">
+            <el-form :model="userForm" ref="userForm"  label-width="60px" class="demo-ruleForm">
                 <el-form-item label="学号" prop="Sno">
                     <el-input v-model="userForm.Sno"></el-input>
                 </el-form-item>
@@ -76,10 +76,11 @@
             },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
-                    if (valid) {
+                    if (valid&&this.userForm.Sno!='') {
                         // console.log(JSON.stringify(this.userForm));
                         handleData("/handle_login",this.userForm,this.succecssfunction);
                     } else {
+                        alertMessage(this,'用户名不能为空,登录','4');
                         console.log('error submit!!');
                         return false;
                     }
