@@ -92,13 +92,13 @@ function getTerm(no){
     let date=new Date;
     let startYear = parseInt(no.toString().slice(0, 4));
     let year=date.getFullYear();
-    let month=date.getMonth()+1;    ////获取当前月份(0-11,0代表1月)
+    let month=date.getMonth()+1;    ////getMonth()获取当前月份(0-11,0代表1月)
     let term = (year - startYear)*2 + parseInt(month/9);
     let yTermValue = year - startYear + parseInt(month/9);
     console.log(year+'年'+month+'月第'+ term+'学期');
 
     let termYear ={
-        term: term, //学期，
+        term: term>8?8:term, //学期，
         year: startYear,    //开学年份
         now: year,  //现在年份
         yTermValue: yTermValue  //选择的年度
