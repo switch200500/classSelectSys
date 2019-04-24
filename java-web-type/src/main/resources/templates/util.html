@@ -655,13 +655,15 @@
                     <el-tab-pane name="4">
                         <span slot="label"><i class="el-icon-goods"></i> 书籍采购</span>
 
-                        <!--
+                        <!--:data="tables.slice((pageIndex-1)*pageSize,pageIndex*pageSize)"
                          :data="classBook.filter(data => !bookSearch
                                     || data.name.toLowerCase().includes(bookSearch.toLowerCase())
                                 )"
                         -->
                         <el-table
-                                :data="tables.slice((pageIndex-1)*pageSize,pageIndex*pageSize)"
+                                :data="classBook.filter(data => !bookSearch
+                                    || data.name.toLowerCase().includes(bookSearch.toLowerCase())
+                                )"
                                 @filter-change="filterChange"
                                 style="width: 100%">
                             <el-table-column type="expand">
@@ -789,7 +791,7 @@
                             </el-table-column>
                         </el-table>
 
-                        <el-pagination
+                       <!-- <el-pagination
                                 @size-change="handleSizeChange"
                                 @current-change="handleCurrentChange"
                                 :current-page="pageIndex"
@@ -797,7 +799,7 @@
                                 :page-size="pageSize"
                                 layout="total, sizes, prev, pager, next, jumper,->"
                                 :total="total">
-                        </el-pagination>
+                        </el-pagination>-->
 
 
                     </el-tab-pane>
@@ -1613,9 +1615,11 @@
                         for(let j=0;j<row.classTimePosition[i].timePosition.length;j++ ){
                             let time = row.classTimePosition[i].timePosition[j].time;
                             let weekD = row.classTimePosition[i].timePosition[j].weekD;
-                            // console.log(time);
-                            // console.log(this.classTableData.slice(time-1,time)[0][weekD]);
-                            if(this.classTableData.slice(time-1,time)[0][weekD] && n==0){
+                            let td = this.classTableData.slice(time-1,time)[0][weekD];
+                            // console.log("aaaa"+n);
+                            // console.log(td);
+                            if(td != null && td > 0 && n==0){
+                                // console.log("bbbb");
                                 alertMessage(this,'该课程时间与课程表已选课程时间冲突，选课','4');
                                 n++;
                             }
