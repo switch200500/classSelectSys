@@ -47,16 +47,4 @@ public class StudentsController {
 
     }
 
-    @RequestMapping("/handle_class")
-    public String login(long Sno, String password){
-       List<Students> allStdents = studentsService.getAllStudents(Sno, password);
-        String result = "";
-        if (!allStdents.isEmpty()){
-            result = "success";
-        }else {
-            result = "error";
-        }
-        return result;
-    }
-
 }
